@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Servicio PHP
+  php:
+    container_name: tutorium-php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tutorium-php:8.2
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+      - ./config/php.ini:/usr/local/etc/php/conf.d/php.ini
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - PAYPAL_API_KEY=${PAYPAL_API_KEY}
+      - PAYPAL_API_SECRET=${PAYPAL_API_SECRET}
+    depends_on:
+      - mysql
+    networks:
+      - tutorium-network
+    command: php -S 0.0.0.0:8000 -t public
+
+  # Servicio MySQL
+  mysql:
+    container_name: tutorium-mysql
+    image: mysql:8.2
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./config/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    networks:
+      - tutorium-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Servicio PhpMyAdmin (opcional, para gestionar la base de datos)
+  phpmyadmin:
+    container_name: tutorium-phpmyadmin
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - tutorium-network
+
+volumes:
+  mysql-data:
+
+networks:
+  tutorium-network:
+    driver: bridge
+

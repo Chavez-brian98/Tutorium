@@ -1,0 +1,23 @@
+﻿# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+# Environment
+.env
+# OS
+.DS_Store
+Thumbs.db
+# Docker
+.docker/
+mysql-data/
+# PHP
+vendor/
+composer.lock
+# Logs
+logs/
+*.log
+# Temporary
+tmp/
+temp/
