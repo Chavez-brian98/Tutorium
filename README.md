@@ -39,48 +39,6 @@ docker-compose --version
 
 ---
 
-## 🚀 Inicio Rápido
-
-### Usando Docker Compose
-
-```bash
-# Navegar a la carpeta del proyecto
-cd C:\Users\Brian\PhpstormProjects\Tutorium
-
-# Construir e iniciar los contenedores
-docker-compose up -d
-
-# Ver logs en tiempo real
-docker-compose logs -f
-
-# Detener contenedores
-docker-compose down
-```
-
-### Paso a Paso
-
-```bash
-# 1. Clonar o descargar el proyecto
-cd your-project-path
-
-# 2. Copiar .env.example a .env (si no existe)
-copy .env.example .env
-
-# 3. Construir las imágenes
-docker-compose build
-
-# 4. Levantar los servicios
-docker-compose up -d
-
-# 5. Esperar a que MySQL esté listo (verificar logs)
-docker-compose logs mysql
-
-# 6. ¡Listo! Acceder a la aplicación
-# http://localhost:8000
-```
-
----
-
 ## 📁 Estructura del Proyecto
 
 ```
@@ -172,7 +130,7 @@ Las variables ya están configuradas por defecto. Puedes modificarlas según tus
 DB_HOST=mysql              # nombre del servicio Docker
 DB_PORT=3306
 DB_NAME=tutorium_db
-DB_USER=tutorium_user
+DB_USER=tutorium_user #utilizar un nombre distinto de: 'root'
 DB_PASSWORD=tutorium_password
 DB_ROOT_PASSWORD=root_password
 
@@ -217,7 +175,7 @@ http://localhost:8080
 ```
 host: mysql
 port: 3306
-username: tutorium_user
+username: tutorium_user (utilizen uno distinto a root)
 password: tutorium_password
 database: tutorium_db
 ```
@@ -253,9 +211,6 @@ docker-compose up -d
 # Detener contenedores
 docker-compose down
 
-# Detener y eliminar datos de MySQL
-docker-compose down -v
-
 # Reiniciar contenedores
 docker-compose restart
 
@@ -287,7 +242,10 @@ docker-compose exec php bash
 
 ```bash
 # Conectar a MySQL interactivamente
-docker-compose exec mysql mysql -u tutorium_user -ptutorium_password tutorium_db
+docker-compose exec mysql mysql -u user -p password 
+
+# entrar a la base de datos
+docker-compose exec mysql use tutorium_db
 
 # Ejecutar comando SQL
 docker-compose exec mysql mysql -u tutorium_user -ptutorium_password -e "SHOW TABLES;"
@@ -334,7 +292,7 @@ $timeout = getenv('TIMEOUT') ?: 30;
 
 ---
 
-## 🐛 Troubleshooting
+## 🐛 Errores comunes
 
 ### ❌ Error: "El puerto 3306 ya está en uso"
 
@@ -476,9 +434,11 @@ Si tienes problemas:
 
 ---
 
-## 📄 Licencia
+## 📄 iniciar con el srvidor web de PHP
 
-Este proyecto es parte de Tutorium.
+```bash
+php -S localhost:8000 -t public
+```
 
 ---
 
