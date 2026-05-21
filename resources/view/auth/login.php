@@ -1,133 +1,132 @@
-<?php
-// Vista de login visual בלבד, sin lógica de autenticación
-?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión | Tutorium</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-slate-100 text-slate-800">
-    <div class="min-h-screen grid lg:grid-cols-2">
-        <!-- Panel izquierdo -->
-        <div class="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-500">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.12),transparent_35%)]"></div>
-            <div class="relative z-10 flex flex-col justify-between p-12 w-full text-white">
-                <div>
-                    <div class="inline-flex items-center gap-3 rounded-full bg-white/15 px-4 py-2 backdrop-blur-sm border border-white/20">
-                        <div class="h-3 w-3 rounded-full bg-white"></div>
-                        <span class="text-sm font-medium tracking-wide">Tutorium</span>
-                    </div>
-                    <h1 class="mt-10 text-5xl font-extrabold leading-tight max-w-xl">
-                        Accede a tu panel con estilo y simplicidad.
-                    </h1>
-                    <p class="mt-6 max-w-lg text-lg text-white/85 leading-relaxed">
-                        Una interfaz limpia, elegante y moderna para iniciar sesión en tu sistema.
-                        Diseñada para verse bien en cualquier pantalla.
-                    </p>
-                </div>
+<div class="min-h-screen grid lg:grid-cols-2" style="font-family:'Nunito',sans-serif;">
 
-                <div class="grid grid-cols-3 gap-4 max-w-lg">
-                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur-sm border border-white/20">
-                        <div class="text-2xl font-bold">+24%</div>
-                        <div class="text-sm text-white/80 mt-1">Productividad</div>
-                    </div>
-                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur-sm border border-white/20">
-                        <div class="text-2xl font-bold">24/7</div>
-                        <div class="text-sm text-white/80 mt-1">Acceso</div>
-                    </div>
-                    <div class="rounded-2xl bg-white/15 p-4 backdrop-blur-sm border border-white/20">
-                        <div class="text-2xl font-bold">SSL</div>
-                        <div class="text-sm text-white/80 mt-1">Seguro</div>
-                    </div>
-                </div>
+    <!-- Panel izquierdo -->
+    <div class="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden" style="background:linear-gradient(145deg,#7b1c1c 0%,#9e2a2a 50%,#5c1313 100%);">
+        <div class="absolute -top-20 -right-20 w-72 h-72 rounded-full" style="background:rgba(200,146,42,0.15);"></div>
+        <div class="absolute -bottom-16 -left-10 w-56 h-56 rounded-full" style="background:rgba(255,255,255,0.06);"></div>
+
+        <div class="relative z-10">
+            <div class="inline-flex items-center gap-2 rounded-full px-4 py-2 w-fit" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);">
+                <span class="w-2 h-2 rounded-full" style="background:#e8b44a;"></span>
+                <span class="text-sm font-semibold text-white">Tutorium</span>
             </div>
+
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/UNICAES_Logo.png" alt="Logo UNICAES" class="w-24 h-24 object-contain mt-6 block" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">
+
+            <h1 class="mt-6 text-4xl font-bold leading-snug max-w-xs text-white" style="font-family:'Playfair Display',Georgia,serif;">
+                Accede a tu panel con estilo y simplicidad.
+            </h1>
+            <p class="mt-4 text-sm leading-relaxed max-w-xs" style="color:rgba(255,255,255,0.8);">
+                Una interfaz limpia, elegante y moderna para iniciar sesión en tu sistema. Diseñada para verse bien en cualquier pantalla.
+            </p>
         </div>
 
-        <!-- Panel derecho -->
-        <div class="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-16 bg-white">
-            <div class="w-full max-w-md">
-                <div class="lg:hidden mb-8 text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200">
-                        <span class="text-xl font-bold">T</span>
-                    </div>
-                    <h1 class="text-3xl font-extrabold text-slate-900">Tutorium</h1>
-                    <p class="mt-2 text-slate-500">Inicia sesión para continuar</p>
-                </div>
-
-                <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                    <div class="mb-8">
-                        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Bienvenido</p>
-                        <h2 class="mt-2 text-3xl font-bold text-slate-900">Iniciar sesión</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">
-                            Ingresa tus credenciales para acceder al sistema.
-                        </p>
-                    </div>
-
-                    <form action="#" method="post" class="space-y-5">
-                        <div>
-                            <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Correo electrónico</label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                placeholder="tu@email.com"
-                                class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
-                            >
-                        </div>
-
-                        <div>
-                            <label for="password" class="mb-2 block text-sm font-medium text-slate-700">Contraseña</label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="••••••••"
-                                class="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
-                            >
-                        </div>
-
-                        <div class="flex items-center justify-between gap-4">
-                            <label class="flex items-center gap-2 text-sm text-slate-600">
-                                <input type="checkbox" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-                                Recordarme
-                            </label>
-                            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
-                        </div>
-
-                        <button
-                            type="submit"
-                            class="w-full rounded-2xl bg-blue-600 px-4 py-3.5 font-semibold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-200 focus:outline-none focus:ring-4 focus:ring-blue-200"
-                        >
-                            Entrar
-                        </button>
-                    </form>
-
-                    <div class="my-8 flex items-center gap-4">
-                        <div class="h-px flex-1 bg-slate-200"></div>
-                        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">o continúa con</span>
-                        <div class="h-px flex-1 bg-slate-200"></div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <button class="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50">
-                            Google
-                        </button>
-                        <button class="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50">
-                            Microsoft
-                        </button>
-                    </div>
-
-                    <p class="mt-8 text-center text-sm text-slate-500">
-                        ¿No tienes una cuenta?
-                        <a href="#" class="font-semibold text-blue-600 hover:text-blue-700 hover:underline">Crear cuenta</a>
-                    </p>
-                </div>
+        <div class="relative z-10 grid grid-cols-3 gap-3 max-w-xs">
+            <div class="rounded-2xl p-4 text-center" style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.2);">
+                <div class="text-xl font-bold" style="color:#e8b44a;">+24%</div>
+                <div class="text-xs mt-1" style="color:rgba(255,255,255,0.75);">Productividad</div>
+            </div>
+            <div class="rounded-2xl p-4 text-center" style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.2);">
+                <div class="text-xl font-bold" style="color:#e8b44a;">24/7</div>
+                <div class="text-xs mt-1" style="color:rgba(255,255,255,0.75);">Acceso</div>
+            </div>
+            <div class="rounded-2xl p-4 text-center" style="background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.2);">
+                <div class="text-xl font-bold" style="color:#e8b44a;">SSL</div>
+                <div class="text-xs mt-1" style="color:rgba(255,255,255,0.75);">Seguro</div>
             </div>
         </div>
     </div>
-</body>
-</html>
 
+    <!-- Panel derecho -->
+    <div class="flex items-center justify-center px-6 py-12 sm:px-10" style="background:var(--fondo-card);">
+        <div class="w-full max-w-sm">
+
+            <!-- Logo mobile -->
+            <div class="lg:hidden mb-8 text-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/UNICAES_Logo.png" alt="Logo UNICAES" class="w-16 h-16 object-contain mx-auto mb-3">
+                <h1 class="text-2xl font-bold" style="font-family:'Playfair Display',Georgia,serif;color:var(--granate-700);">Tutorium</h1>
+                <p class="text-sm mt-1" style="color:var(--texto-secundario);">Inicia sesión para continuar</p>
+            </div>
+
+            <div class="rounded-3xl p-8" style="background:#fff;border:1px solid rgba(123,28,28,0.12);box-shadow:0 20px 60px rgba(92,19,19,0.08);">
+
+                <p class="text-xs font-bold tracking-widest uppercase" style="color:var(--dorado-500);">Bienvenido</p>
+                <h2 class="mt-2 text-3xl font-bold" style="font-family:'Playfair Display',Georgia,serif;color:var(--granate-700);">Iniciar sesión</h2>
+                <p class="mt-2 text-sm leading-relaxed" style="color:var(--texto-secundario);">Ingresa tus credenciales para acceder al sistema.</p>
+
+                <form action="#" method="post" class="mt-8 space-y-5">
+
+                    <div>
+                        <label for="email" class="block text-sm font-semibold mb-2" style="color:var(--texto-principal);">Correo electrónico</label>
+                        <input
+                                id="email" name="email" type="email"
+                                placeholder="tu@unicaes.edu.sv"
+                                class="w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
+                                style="border:1.5px solid #e0d8d0;background:var(--fondo-base);color:var(--texto-principal);font-family:'Nunito',sans-serif;"
+                                onfocus="this.style.borderColor='var(--granate-600)';this.style.boxShadow='0 0 0 4px rgba(123,28,28,0.1)';this.style.background='#fff';"
+                                onblur="this.style.borderColor='#e0d8d0';this.style.boxShadow='none';this.style.background='var(--fondo-base)';"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-semibold mb-2" style="color:var(--texto-principal);">Contraseña</label>
+                        <input
+                                id="password" name="password" type="password"
+                                placeholder="••••••••"
+                                class="w-full rounded-2xl px-4 py-3 text-sm outline-none transition"
+                                style="border:1.5px solid #e0d8d0;background:var(--fondo-base);color:var(--texto-principal);font-family:'Nunito',sans-serif;"
+                                onfocus="this.style.borderColor='var(--granate-600)';this.style.boxShadow='0 0 0 4px rgba(123,28,28,0.1)';this.style.background='#fff';"
+                                onblur="this.style.borderColor='#e0d8d0';this.style.boxShadow='none';this.style.background='var(--fondo-base)';"
+                        >
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4">
+                        <label class="flex items-center gap-2 text-sm cursor-pointer" style="color:var(--texto-secundario);">
+                            <input type="checkbox" name="remember" class="w-4 h-4 rounded" style="accent-color:var(--granate-600);">
+                            Recordarme
+                        </label>
+                        <a href="#" class="text-sm font-semibold hover:underline" style="color:var(--dorado-500);">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button
+                            type="submit"
+                            class="w-full rounded-2xl py-3.5 text-sm font-bold text-white transition"
+                            style="background:var(--granate-600);box-shadow:0 4px 16px rgba(123,28,28,0.25);font-family:'Nunito',sans-serif;"
+                            onmouseover="this.style.background='var(--granate-700)';"
+                            onmouseout="this.style.background='var(--granate-600)';"
+                    >
+                        Entrar
+                    </button>
+                </form>
+
+                <div class="flex items-center gap-3 my-6">
+                    <div class="flex-1 h-px" style="background:#e0d8d0;"></div>
+                    <span class="text-xs font-bold tracking-widest uppercase" style="color:var(--texto-sutil);">o continúa con</span>
+                    <div class="flex-1 h-px" style="background:#e0d8d0;"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button
+                            class="rounded-2xl py-3 text-sm font-bold transition"
+                            style="border:1.5px solid #e0d8d0;background:#fff;color:var(--texto-principal);font-family:'Nunito',sans-serif;"
+                            onmouseover="this.style.borderColor='var(--granate-500)';this.style.background='var(--granate-50)';"
+                            onmouseout="this.style.borderColor='#e0d8d0';this.style.background='#fff';"
+                    >Google</button>
+                    <button
+                            class="rounded-2xl py-3 text-sm font-bold transition"
+                            style="border:1.5px solid #e0d8d0;background:#fff;color:var(--texto-principal);font-family:'Nunito',sans-serif;"
+                            onmouseover="this.style.borderColor='var(--granate-500)';this.style.background='var(--granate-50)';"
+                            onmouseout="this.style.borderColor='#e0d8d0';this.style.background='#fff';"
+                    >Microsoft</button>
+                </div>
+
+                <p class="mt-6 text-center text-sm" style="color:var(--texto-secundario);">
+                    ¿No tienes una cuenta?
+                    <a href="#" class="font-bold hover:underline" style="color:var(--granate-600);">Crear cuenta</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</div>

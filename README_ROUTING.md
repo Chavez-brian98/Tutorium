@@ -47,8 +47,10 @@ Tutorium/
 
 ```bash
 # Desde la raíz del proyecto
-php -S localhost:8000 -t public
+php -S localhost:8000 -t public 
 ```
+
+> En Windows, usa la ruta absoluta del router para que `/` redirija a `public/index.php` correctamente.
 
 Luego accede a: **http://localhost:8000**
 
