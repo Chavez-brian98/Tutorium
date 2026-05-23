@@ -27,6 +27,10 @@ Router::get('/session', function () {
 
 require_once __DIR__ . '/../app/controller/SessionController.php';
 require_once __DIR__ . '/../app/controller/EvaluationController.php';
+require_once __DIR__ . '/../app/controller/AttendanceController.php';
+require_once __DIR__ . '/../app/controller/SessionController.php';
+require_once __DIR__ . '/../app/controller/MaterialController.php';
+  
 
 Router::get('/evaluation/crear', function () {
     $controller = new EvaluationController();
@@ -43,6 +47,26 @@ Router::post('/evaluation/importar-xml', function () {
     return $controller->importarXML();
 });
 
+Router::post('/attendance/marcar', function () {
+    $controller = new AttendanceController();
+    return $controller->marcar();
+});
+
+
+Router::get('/session', function () {
+    $controller = new SessionController();
+    return $controller->mostrar(1); // tutoria_id hardcodeado por ahora
+});
+
+Router::post('/material/guardar', function () {
+    $controller = new MaterialController();
+    return $controller->guardar();
+});
+
+Router::post('/session/guardarLink', function () {
+    $controller = new SessionController();
+    return $controller->guardarLink();
+});
 // Ejemplo con Controlador (descomenta para usar)
 // Router::get('/users', 'ExampleUserController@index');
 // Router::get('/users/{id}', 'ExampleUserController@show');

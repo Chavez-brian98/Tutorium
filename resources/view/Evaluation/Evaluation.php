@@ -15,18 +15,18 @@ $descripcion = htmlspecialchars($_GET['descripcion'] ?? '');
 $total       = max(1, (int) ($_GET['total'] ?? 1));
 $tipos_raw   = $_GET['tipos'] ?? 'cerrada';
 $tipos       = array_filter(explode(',', $tipos_raw));
+$titulo_raw  = $_GET['titulo']      ?? 'Sin título';  
+$descripcion_raw = $_GET['descripcion'] ?? '';        
 
-// ── Distribución proporcional ──────────────────────────────────────
-// Reparte el total entre los tipos elegidos lo más equitativo posible.
-// Ejemplo: 10 preguntas, 3 tipos → [4, 3, 3]
-// Si es 1 tipo → todas del mismo tipo.
-$distribucion = [];
-if (count($tipos) > 0) {
-    $base  = intdiv($total, count($tipos));   // cociente entero
-    $resto = $total % count($tipos);          // sobrante
 
+$distribucion_raw = $_GET['distribucion'] ?? '{}';
+$distribucion = json_decode($distribucion_raw, true) ?: [];
+
+// Si no vino distribución, repartir equitativamente como fallback
+if (empty($distribucion) && count($tipos) > 0) {
+    $base  = intdiv($total, count($tipos));
+    $resto = $total % count($tipos);
     foreach (array_values($tipos) as $i => $tipo) {
-        // Los primeros $resto tipos reciben 1 pregunta extra
         $distribucion[$tipo] = $base + ($i < $resto ? 1 : 0);
     }
 }
@@ -63,8 +63,8 @@ $etiquetas = [
     <!-- Formulario -->
     <form id="form-evaluacion" action="/evaluation/guardar" method="POST">
         <input type="hidden" name="tutoria_id"  value="<?= $tutoria_id ?>">
-        <input type="hidden" name="titulo"       value="<?= $titulo ?>">
-        <input type="hidden" name="descripcion"  value="<?= $descripcion ?>">
+        <input type="hidden" name="titulo"       value="<?= htmlspecialchars($titulo_raw) ?>">
+        <input type="hidden" name="descripcion"  value="<?= htmlspecialchars($descripcion_raw) ?>">
 
         <div id="preguntas-container"></div>
 
