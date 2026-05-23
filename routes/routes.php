@@ -21,6 +21,28 @@ Router::get('/', function () {
 });
 
 
+Router::get('/session', function () {
+    return view('Session/Session');
+});
+
+require_once __DIR__ . '/../app/controller/SessionController.php';
+require_once __DIR__ . '/../app/controller/EvaluationController.php';
+
+Router::get('/evaluation/crear', function () {
+    $controller = new EvaluationController();
+    return $controller->mostrarFormulario();
+});
+
+Router::post('/evaluation/guardar', function () {
+    $controller = new EvaluationController();
+    return $controller->guardar();
+});
+
+Router::post('/evaluation/importar-xml', function () {
+    $controller = new EvaluationController();
+    return $controller->importarXML();
+});
+
 // Ejemplo con Controlador (descomenta para usar)
 // Router::get('/users', 'ExampleUserController@index');
 // Router::get('/users/{id}', 'ExampleUserController@show');
