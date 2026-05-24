@@ -20,7 +20,6 @@ Router::get('/', function () {
     ]);
 });
 
-
 // Ejemplo con Controlador (descomenta para usar)
 // Router::get('/users', 'ExampleUserController@index');
 // Router::get('/users/{id}', 'ExampleUserController@show');

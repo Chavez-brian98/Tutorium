@@ -3,7 +3,7 @@
     "description": "Sistema simple de rutas, CDN y base de datos",
     "type": "project",
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.2",
       "ext-pdo": "*",
       "ext-json": "*"
     },

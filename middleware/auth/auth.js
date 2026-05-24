@@ -1,0 +1,3 @@
+function autenticacion(type, text){
+
+}

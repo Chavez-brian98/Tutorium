@@ -3,6 +3,7 @@
 /**
  * Bootstrap - Carga configuración y variables de entorno
  */
+session_start();
 
 // Ruta base del proyecto
 $basePath = __DIR__;

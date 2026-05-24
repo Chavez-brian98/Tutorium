@@ -92,33 +92,10 @@
                             type="submit"
                             class="w-full rounded-2xl py-3.5 text-sm font-bold text-white transition"
                             style="background:var(--granate-600);box-shadow:0 4px 16px rgba(123,28,28,0.25);font-family:'Nunito',sans-serif;"
-                            onmouseover="this.style.background='var(--granate-700)';"
-                            onmouseout="this.style.background='var(--granate-600)';"
                     >
                         Entrar
                     </button>
                 </form>
-
-                <div class="flex items-center gap-3 my-6">
-                    <div class="flex-1 h-px" style="background:#e0d8d0;"></div>
-                    <span class="text-xs font-bold tracking-widest uppercase" style="color:var(--texto-sutil);">o continúa con</span>
-                    <div class="flex-1 h-px" style="background:#e0d8d0;"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <button
-                            class="rounded-2xl py-3 text-sm font-bold transition"
-                            style="border:1.5px solid #e0d8d0;background:#fff;color:var(--texto-principal);font-family:'Nunito',sans-serif;"
-                            onmouseover="this.style.borderColor='var(--granate-500)';this.style.background='var(--granate-50)';"
-                            onmouseout="this.style.borderColor='#e0d8d0';this.style.background='#fff';"
-                    >Google</button>
-                    <button
-                            class="rounded-2xl py-3 text-sm font-bold transition"
-                            style="border:1.5px solid #e0d8d0;background:#fff;color:var(--texto-principal);font-family:'Nunito',sans-serif;"
-                            onmouseover="this.style.borderColor='var(--granate-500)';this.style.background='var(--granate-50)';"
-                            onmouseout="this.style.borderColor='#e0d8d0';this.style.background='#fff';"
-                    >Microsoft</button>
-                </div>
 
                 <p class="mt-6 text-center text-sm" style="color:var(--texto-secundario);">
                     ¿No tienes una cuenta?
