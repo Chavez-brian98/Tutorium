@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
     <title><?= $title ?? 'Tutorium' ?></title>
 
     <!-- CSS de la aplicación -->
@@ -25,9 +26,10 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
     <script src="<?= asset('resources/javascript/Alerts.js') ?>"></script>
 
     <?php if (!empty($extra_js)) echo $extra_js; ?>
 </body>
 </html>
+

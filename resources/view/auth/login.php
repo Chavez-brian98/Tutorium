@@ -126,7 +126,6 @@
                     ¿No tienes una cuenta?
                     <a href="#" class="font-bold hover:underline" style="color:var(--granate-600);">Crear cuenta</a>
                 </p>
-
             </div>
         </div>
     </div>
