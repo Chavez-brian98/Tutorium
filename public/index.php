@@ -14,6 +14,13 @@ require_once __DIR__ . '/../bootstrap.php';
 // Usar la clase Router
 use App\Router;
 
+// Ajustar la base de rutas si la app está servida desde una subcarpeta
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$basePath = rtrim(str_replace('/index.php', '', dirname($scriptName)), '/');
+if ($basePath && $basePath !== '.') {
+	Router::setBasePath($basePath);
+}
+
 // Registrar rutas desde el archivo de rutas
 require_once __DIR__ . '/../routes/routes.php';
 

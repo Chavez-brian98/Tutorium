@@ -156,7 +156,7 @@ Una vez que los contenedores estén corriendo, accede a:
 
 ### Aplicación Web
 ```bash
-php -S localhost:8000
+php -S localhost:8000 public/router.php
 ```
 
 ```
@@ -437,8 +437,10 @@ Si tienes problemas:
 ## 📄 iniciar con el srvidor web de PHP
 
 ```bash
-php -S localhost:8000 -t public
+php -S localhost:8002 -t public
 ```
+
+> Si estás en Windows, asegúrate de usar la ruta absoluta del router para que la ruta `/` muestre el login.
 
 ---
 

@@ -13,6 +13,8 @@ use App\Router;
 use App\Database;
 
 // Ruta principal (usa layout base para incluir CDNs y assets globales)
+
+//RUTAS LOGIN
 Router::get('/', function () {
     return view('layout/base', [
         'title' => 'Login Tutorium',
@@ -20,6 +22,29 @@ Router::get('/', function () {
     ]);
 });
 
+Router::get('/login', function () {
+    return view('layout/base', [
+        'title' => 'Login Tutorium',
+        'content' => view('auth/login'),
+    ]);
+});
+
+Router::post('/login', 'Auth\\LoginController@handle');
+
+//USUARIOS
+Router::get('/usuario/inicio', function () {
+    return view('layout/base', [
+        'title' => 'Mis tutorias',
+        'content' => view('usuario/inicio'),
+    ]);
+});
+
+//ADMINISTRADOR
+Router::get('/admin/dashboard', function () {
+    return view('layout/base', [
+        'title' => 'Dashboard',
+        'content' => view('admin/dashboard'),
+    ]);
 require_once __DIR__ . '/../app/controller/SessionController.php';
 require_once __DIR__ . '/../app/controller/EvaluationController.php';
 require_once __DIR__ . '/../app/controller/AttendanceController.php';
@@ -131,8 +156,14 @@ function view($name, $data = [])
     // El resto de vistas se envuelven en base.php
     ob_start();
     include $viewPath;
-    $content = ob_get_clean();
 
-    $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
-    include $layoutPath;
+    return ob_get_clean();
+  
+  // $content = ob_get_clean();
+
+   // $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
+   // include $layoutPath;
 }
+
+   
+

@@ -185,7 +185,7 @@ Router::delete('/productos/{id}', function ($id) {
 
 /*
 Router::get('/login', function () {
-    return view('auth/login');
+    return view('Auth/login');
 });
 
 Router::get('/perfil', function () {
@@ -217,9 +217,9 @@ Router::post('/admin/users', 'ExampleUserController@store');
 Router::put('/admin/users/{id}', 'ExampleUserController@update');
 Router::delete('/admin/users/{id}', 'ExampleUserController@destroy');
 
-Router::get('/auth/login', 'AuthController@loginForm');
-Router::post('/auth/login', 'AuthController@login');
-Router::get('/auth/logout', 'AuthController@logout');
+Router::get('/Auth/login', 'AuthController@loginForm');
+Router::post('/Auth/login', 'AuthController@login');
+Router::get('/Auth/logout', 'AuthController@logout');
 */
 
 // ============================================================================
@@ -229,7 +229,7 @@ Router::get('/auth/logout', 'AuthController@logout');
 /*
 // Mostrar formulario de login
 Router::get('/login', function () {
-    return view('auth/login');
+    return view('Auth/login');
 });
 
 // Procesar login
@@ -328,7 +328,7 @@ Router::get('/login', function () {
 // ============================================================================
 
 /*
-<!-- resources/view/auth/login.php -->
+<!-- resources/view/Auth/login.php -->
 <form action="<?= url('/login') ?>" method="post">
     <input type="email" name="email" placeholder="Correo">
     <input type="password" name="password" placeholder="Contraseña">

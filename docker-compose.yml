@@ -23,7 +23,6 @@ services:
       - mysql
     networks:
       - tutorium-network
-    command: php -S 0.0.0.0:8000 -t public
 
   # Servicio MySQL
   mysql:
