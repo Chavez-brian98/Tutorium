@@ -13,10 +13,37 @@ use App\Router;
 use App\Database;
 
 // Ruta principal (usa layout base para incluir CDNs y assets globales)
+
+//RUTAS LOGIN
 Router::get('/', function () {
     return view('layout/base', [
         'title' => 'Login Tutorium',
         'content' => view('auth/login'),
+    ]);
+});
+
+Router::get('/login', function () {
+    return view('layout/base', [
+        'title' => 'Login Tutorium',
+        'content' => view('auth/login'),
+    ]);
+});
+
+Router::post('/login', 'auth\\loginController@handle');
+
+//USUARIOS
+Router::get('/usuario/inicio', function () {
+    return view('layout/base', [
+        'title' => 'Mis tutorias',
+        'content' => view('usuario/inicio'),
+    ]);
+});
+
+//ADMINISTRADOR
+Router::get('/admin/dashboard', function () {
+    return view('layout/base', [
+        'title' => 'Dashboard',
+        'content' => view('admin/dashboard'),
     ]);
 });
 
@@ -42,5 +69,3 @@ function view($name, $data = [])
     include $viewPath;
     return ob_get_clean();
 }
-
-

@@ -156,7 +156,7 @@ Una vez que los contenedores estén corriendo, accede a:
 
 ### Aplicación Web
 ```bash
-php -S localhost:8000
+php -S localhost:8000 public/router.php
 ```
 
 ```

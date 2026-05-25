@@ -10,7 +10,9 @@
     "require-dev": {},
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "App\\": "src/",
+            "App\\Controller\\": "app/Controller/",
+            "App\\Model\\": "app/Model/"
         },
         "files": [
             "helpers/url.php"

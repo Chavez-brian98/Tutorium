@@ -18,7 +18,7 @@ if (file_exists($envFile)) {
  * Cargar variables desde archivo .env
  * Formato: KEY=value
  */
-function loadEnvFile($filePath)
+function loadEnvFile($filePath): void
 {
     if (!file_exists($filePath)) {
         return;
