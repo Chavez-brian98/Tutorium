@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\auth;
+namespace App\Controller\Auth;
 
 use App\Database;
 use estado_general;
@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../model/users.php';
 require_once __DIR__ . '/../../../resources/enum/rol_usuario.php';
 require_once __DIR__ . '/../../../resources/enum/estado_general.php';
 
-class loginController
+class LoginController
 {
     private users $model;
 
@@ -52,7 +52,6 @@ class loginController
 
         if ($user['estado'] !== estado_general::ACTIVO->value) {
             $this->BackWithError('Este usuario esta inactivo.');
-            return;
         }
 
         // iniciar sesion

@@ -29,7 +29,7 @@ Router::get('/login', function () {
     ]);
 });
 
-Router::post('/login', 'auth\\loginController@handle');
+Router::post('/login', 'Auth\\LoginController@handle');
 
 //USUARIOS
 Router::get('/usuario/inicio', function () {

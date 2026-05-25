@@ -6,7 +6,7 @@
     <title><?= $title ?? 'Tutorium' ?></title>
 
     <!-- CSS de la aplicación -->
-    <link rel="stylesheet" href="<?= asset('resources/css/styles.css') ?>">
+    <link rel="stylesheet" href="<?= asset('resources/css/style.css') ?>">
 
     <!-- Tailwind CDN (para diseño rápido en desarrollo) -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
