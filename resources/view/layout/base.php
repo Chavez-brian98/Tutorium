@@ -19,10 +19,10 @@
 </head>
 
 <body class="bg-slate-100 text-slate-800 min-h-screen">
-    <?php include __DIR__ . '/navbar.php'; ?>
+<!--    --><?php //include __DIR__ . '/navbar.php'; ?>
 
     <main class="min-h-screen">
-        <?= $content ?? '' ?>
+        <?= $content ?? '/' ?>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

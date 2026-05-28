@@ -120,6 +120,13 @@
                     >
                         Entrar
                     </button>
+
+                    <div class="mt-6 pt-6 border-t border-slate-200">
+                        <a href="<?= isset($url) ? $url('/session') : '/session' ?>" class="inline-block w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-center font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100">
+                            👁️ Ver Session
+                        </a>
+                    </div>
+
                 </form>
 
                 <p class="mt-6 text-center text-sm" style="color:var(--texto-secundario);">

@@ -10,7 +10,10 @@
  */
 
 use App\Router;
-use App\Database;
+use App\Controller\AttendanceController;
+use App\Controller\EvaluationController;
+use App\Controller\MaterialController;
+use App\Controller\SessionController;
 
 // Ruta principal (usa layout base para incluir CDNs y assets globales)
 
@@ -45,15 +48,9 @@ Router::get('/admin/dashboard', function () {
         'title' => 'Dashboard',
         'content' => view('admin/dashboard'),
     ]);
-require_once __DIR__ . '/../app/controller/SessionController.php';
-require_once __DIR__ . '/../app/controller/EvaluationController.php';
-require_once __DIR__ . '/../app/controller/AttendanceController.php';
-require_once __DIR__ . '/../app/controller/SessionController.php';
-require_once __DIR__ . '/../app/controller/MaterialController.php';
+});
 
-
-
-
+// Rutas relacionadas con evaluaciones, asistencia, sesiones y materiales
 Router::get('/evaluation/crear', function () {
     $controller = new EvaluationController();
     return $controller->mostrarFormulario();
@@ -89,38 +86,29 @@ Router::post('/session/guardarLink', function () {
     return $controller->guardarLink();
 });
 
-
-//rutas para el sidebar 
-// Dashboard
+// Rutas para el sidebar / navegación
 Router::get('/dashboard', function () {
     return view('Dashboard/Dashboard', ['title' => 'Dashboard']);
 });
 
-// Tutorías para tutor/alumno
 Router::get('/tutorias', function () {
     return view('TutorialsUser/Tutorial', ['title' => 'Tutorías']);
 });
 
-// Tutorías para admin
 Router::get('/tutorias/admin', function () {
     return view('TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
 });
 
-// Evaluaciones
 Router::get('/evaluaciones', function () {
     return view('EvaluationHistory/EvaluationHistory', ['title' => 'Evaluaciones']);
 });
-
-// Materias
-//Router::get('/materias', function () {
-    //return view('Materias/Materias', ['title' => 'Materias']);
-//});
 
 // Perfil
 Router::get('/perfil', function () {
     return view('Profile/Profile', ['title' => 'Perfil']);
 });
-router::get('/auth/login', function () {
+
+Router::get('/auth/login', function () {
     return view('auth/login', ['title' => 'Login']);
 });
 
@@ -129,41 +117,41 @@ router::get('/auth/login', function () {
 // Router::get('/users/{id}', 'ExampleUserController@show');
 // Router::post('/users', 'ExampleUserController@store');
 
-/**
- * Helper para renderizar vistas
- */
-function view($name, $data = [])
-{
-    extract($data);
-    $viewPath = __DIR__ . '/../resources/view/' . $name . '.php';
+    /**
+     * Helper para renderizar vistas
+     */
+    function view($name, $data = [])
+    {
+        extract($data);
+        $viewPath = __DIR__ . '/../resources/view/' . $name . '.php';
 
-    if (!file_exists($viewPath)) {
-        http_response_code(404);
-        echo "Vista $name no encontrada";
-        return;
-    }
+        if (!file_exists($viewPath)) {
+            http_response_code(404);
+            echo "Vista $name no encontrada";
+            return;
+        }
 
-    // Vistas que NO usan base.php (login, errores, etc.)
-    $sinLayout = ['auth/login', 'auth/register', 'layout/base'];
+        // Vistas que NO usan base.php (login, errores, etc.)
+        $sinLayout = ['auth/login', 'auth/register', 'layout/base'];
 
-    if (in_array($name, $sinLayout)) {
+        if (in_array($name, $sinLayout)) {
+            ob_start();
+            include $viewPath;
+            echo ob_get_clean();
+            return;
+        }
+
+        // El resto de vistas se envuelven en base.php
         ob_start();
         include $viewPath;
-        echo ob_get_clean();
-        return;
+
+//        return ob_get_clean();
+
+         $content = ob_get_clean();
+
+         $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
+         include $layoutPath;
     }
 
-    // El resto de vistas se envuelven en base.php
-    ob_start();
-    include $viewPath;
 
-    return ob_get_clean();
-  
-  // $content = ob_get_clean();
-
-   // $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
-   // include $layoutPath;
-}
-
-   
 

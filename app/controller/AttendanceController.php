@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Controller;
+
 require_once __DIR__ . '/../model/Attendance.php';
 require_once __DIR__ . '/../model/Session.php';
 
