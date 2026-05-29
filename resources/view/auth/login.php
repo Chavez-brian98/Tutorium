@@ -20,7 +20,7 @@
             </h1>
         </div>
 
-        <img src="<?= asset('resources/img/UNICAESlogo.png') ?>" alt="Logo UNICAES"
+        <img src="<?= asset('img/UNICAESlogo.png') ?>" alt="Logo UNICAES"
              class="w-300 h-70 object-contain mb-20 block" style="filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));">
 
         <div class="relative z-5 grid grid-cols-3 gap-3 max-w-xs">

@@ -138,7 +138,7 @@ Router::post('/usuarios', function () {
     $nombre = $_POST['nombre'] ?? '';
     $email = $_POST['email'] ?? '';
 
-    return 'Crear usuario: ' . $nombre . ' / ' . $email;
+    return 'Crear users: ' . $nombre . ' / ' . $email;
 });
 */
 
@@ -246,9 +246,9 @@ Router::get('/logout', function () {
     exit;
 });
 
-// Perfil de usuario
+// Perfil de users
 Router::get('/perfil/{id}', function ($id) {
-    return 'Perfil del usuario ' . $id;
+    return 'Perfil del users ' . $id;
 });
 */
 
@@ -320,7 +320,7 @@ Router::get('/login', function () {
 <script src="<?= cdn('bootstrap/5.0.0/js/bootstrap.bundle.min.js') ?>"></script>
 
 // URL completa basada en APP_URL:
-<a href="<?= route_url('/users/123') ?>">Ver usuario</a>
+<a href="<?= route_url('/users/123') ?>">Ver users</a>
 */
 
 // ============================================================================

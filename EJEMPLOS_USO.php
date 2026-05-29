@@ -16,8 +16,8 @@
 // Ejemplo: Obtener todos los registros
 // $stmt = $pdo->query("SELECT * FROM usuarios");
 // $usuarios = $stmt->fetchAll();
-// foreach ($usuarios as $usuario) {
-//     echo $usuario['nombre'];
+// foreach ($usuarios as $users) {
+//     echo $users['nombre'];
 // }
 
 // ============================================================================
@@ -186,10 +186,10 @@ class AuthMiddleware {
     <div class="container">
         <h1>Lista de Usuarios</h1>
         <table>
-            <?php foreach ($usuarios as $usuario): ?>
+            <?php foreach ($usuarios as $users): ?>
                 <tr>
-                    <td><?= htmlspecialchars($usuario['nombre']) ?></td>
-                    <td><?= htmlspecialchars($usuario['email']) ?></td>
+                    <td><?= htmlspecialchars($users['nombre']) ?></td>
+                    <td><?= htmlspecialchars($users['email']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>

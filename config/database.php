@@ -44,8 +44,8 @@ class Database
     $db_host     = getenv('DB_HOST') ?: 'mysql';
     $db_port     = getenv('DB_PORT') ?: 3306;
     $db_name     = getenv('DB_NAME') ?: 'tutorium_db';
-    $db_user     = getenv('DB_USER') ?: 'karla';
-    $db_password = getenv('DB_PASSWORD') ?: '123456';
+    $db_user     = getenv('DB_USER') ?: 'root';
+    $db_password = getenv('DB_PASSWORD') ?: 'root';
 
     try {
         $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4";

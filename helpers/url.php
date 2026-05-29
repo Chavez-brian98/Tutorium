@@ -11,8 +11,16 @@
  */
 function asset($path)
 {
-    $appUrl = getenv('APP_URL') ?: 'http://localhost:8000';
-    $appUrl = rtrim($appUrl, '/');
+    // Detectar si es HTTP o HTTPS
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+    // Obtener la subcarpeta real del proyecto (ej: /Tutorium/public)
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+    $subDir = rtrim(str_replace('/index.php', '', $scriptName), '/');
+
+    // Construir la URL base dinámica
+    $appUrl = $protocol . $host . $subDir;
 
     // Si la ruta comienza con /, no añadimos barras extra
     if (strpos($path, '/') !== 0) {

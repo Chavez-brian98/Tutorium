@@ -2,11 +2,6 @@
 
 /**
  * Definición de Rutas de la Aplicación
- *
- * Ejemplos:
- *   Router::get('/', function() { ... });
- *   Router::post('/users', 'UserController@store');
- *   Router::get('/users/{id}', 'UserController@show');
  */
 
 use App\Router;
@@ -15,42 +10,57 @@ use App\Controller\EvaluationController;
 use App\Controller\MaterialController;
 use App\Controller\SessionController;
 
-// Ruta principal (usa layout base para incluir CDNs y assets globales)
+// ==========================================
+// RUTAS DE AUTENTICACIÓN (LOGIN)
+// ==========================================
 
-//RUTAS LOGIN
 Router::get('/', function () {
-    return view('layout/base', [
-        'title' => 'Login Tutorium',
-        'content' => view('auth/login'),
-    ]);
+    return view('auth/login', ['title' => 'Login Tutorium']);
 });
 
-Router::get('/login', function () {
-    return view('layout/base', [
-        'title' => 'Login Tutorium',
-        'content' => view('auth/login'),
-    ]);
-});
 
 Router::post('/login', 'Auth\\LoginController@handle');
 
-//USUARIOS
-Router::get('/usuario/inicio', function () {
-    return view('layout/base', [
-        'title' => 'Mis tutorias',
-        'content' => view('usuario/inicio'),
-    ]);
+
+// ==========================================
+// VISTAS DEL DASHBOARD / SECCIONES
+// ==========================================
+
+// USUARIOS (Corregido: Ya no llama a layout/base manualmente)
+Router::get('/users/inicio', function () {
+    return view('users/inicio', ['title' => 'Mis tutorias']);
 });
 
-//ADMINISTRADOR
+// ADMINISTRADOR (Corregido: Ya no llama a layout/base manualmente)
 Router::get('/admin/dashboard', function () {
-    return view('layout/base', [
-        'title' => 'Dashboard',
-        'content' => view('admin/dashboard'),
-    ]);
+    return view('admin/dashboard', ['title' => 'Dashboard']);
 });
 
-// Rutas relacionadas con evaluaciones, asistencia, sesiones y materiales
+Router::get('/dashboard', function () {
+    return view('Dashboard/Dashboard', ['title' => 'Dashboard']);
+});
+
+Router::get('/tutorias', function () {
+    return view('/users/TutorialsUser/Tutorial', ['title' => 'Tutorías']);
+});
+
+Router::get('/tutorias/admin', function () {
+    return view('admin/TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
+});
+
+Router::get('/evaluaciones', function () {
+    return view('/usersEvaluationHistory/EvaluationHistory', ['title' => 'Evaluaciones']);
+});
+
+Router::get('/perfil', function () {
+    return view('Profile/Profile', ['title' => 'Perfil']);
+});
+
+
+// ==========================================
+// CONTROLADORES Y PROCESOS (POST/GET)
+// ==========================================
+
 Router::get('/evaluation/crear', function () {
     $controller = new EvaluationController();
     return $controller->mostrarFormulario();
@@ -73,7 +83,7 @@ Router::post('/attendance/marcar', function () {
 
 Router::get('/session', function () {
     $controller = new SessionController();
-    return $controller->mostrar(1); // tutoria_id hardcodeado por ahora
+    return $controller->mostrar(1);
 });
 
 Router::post('/material/guardar', function () {
@@ -86,72 +96,37 @@ Router::post('/session/guardarLink', function () {
     return $controller->guardarLink();
 });
 
-// Rutas para el sidebar / navegación
-Router::get('/dashboard', function () {
-    return view('Dashboard/Dashboard', ['title' => 'Dashboard']);
-});
 
-Router::get('/tutorias', function () {
-    return view('TutorialsUser/Tutorial', ['title' => 'Tutorías']);
-});
+// ==========================================
+// HELPER PARA RENDERIZAR VISTAS
+// ==========================================
 
-Router::get('/tutorias/admin', function () {
-    return view('TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
-});
+function view($name, $data = [])
+{
+    extract($data);
+    $viewPath = __DIR__ . '/../resources/view/' . $name . '.php';
 
-Router::get('/evaluaciones', function () {
-    return view('EvaluationHistory/EvaluationHistory', ['title' => 'Evaluaciones']);
-});
-
-// Perfil
-Router::get('/perfil', function () {
-    return view('Profile/Profile', ['title' => 'Perfil']);
-});
-
-Router::get('/auth/login', function () {
-    return view('auth/login', ['title' => 'Login']);
-});
-
-// Ejemplo con Controlador (descomenta para usar)
-// Router::get('/users', 'ExampleUserController@index');
-// Router::get('/users/{id}', 'ExampleUserController@show');
-// Router::post('/users', 'ExampleUserController@store');
-
-    /**
-     * Helper para renderizar vistas
-     */
-    function view($name, $data = [])
-    {
-        extract($data);
-        $viewPath = __DIR__ . '/../resources/view/' . $name . '.php';
-
-        if (!file_exists($viewPath)) {
-            http_response_code(404);
-            echo "Vista $name no encontrada";
-            return;
-        }
-
-        // Vistas que NO usan base.php (login, errores, etc.)
-        $sinLayout = ['auth/login', 'auth/register', 'layout/base'];
-
-        if (in_array($name, $sinLayout)) {
-            ob_start();
-            include $viewPath;
-            echo ob_get_clean();
-            return;
-        }
-
-        // El resto de vistas se envuelven en base.php
-        ob_start();
-        include $viewPath;
-
-//        return ob_get_clean();
-
-         $content = ob_get_clean();
-
-         $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
-         include $layoutPath;
+    if (!file_exists($viewPath)) {
+        http_response_code(404);
+        echo "Vista $name no encontrada";
+        return;
     }
 
+    // Evita bucles: Si se pide directamente el layout base, solo lo incluye
+    $sinLayout = ['layout/base'];
 
+    if (in_array($name, $sinLayout)) {
+        ob_start();
+        include $viewPath;
+        return ob_get_clean();
+    }
 
+    ob_start();
+    include $viewPath;
+    $content = ob_get_clean();
+
+    $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
+    ob_start();
+    include $layoutPath;
+    return ob_get_clean();
+}

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model; // <--- ¡ESTO ERA LO QUE FALTABA!
+
 class Material {
     private $db;
 

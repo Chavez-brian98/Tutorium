@@ -5,6 +5,9 @@ namespace App\Controller;
 require_once __DIR__ . '/../model/Attendance.php';
 require_once __DIR__ . '/../model/Session.php';
 
+use App\Model\Attendance;
+use App\Model\Session;
+
 class AttendanceController {
     private $attendanceModel;
     private $sessionModel;

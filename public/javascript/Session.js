@@ -323,7 +323,7 @@ function guardarConfigEvaluacion() {
   window.location.href = "/evaluation/crear?" + params.toString();
 }
 
-// Al final de Session.js, guarda el link cuando el usuario termina de escribir
+// Al final de Session.js, guarda el link cuando el users termina de escribir
 document.getElementById("link-sesion").addEventListener("blur", function () {
   const link = this.value.trim();
 
