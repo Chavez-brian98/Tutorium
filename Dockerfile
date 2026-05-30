@@ -24,6 +24,6 @@ WORKDIR /var/www/html
 # Exponer puerto
 EXPOSE 8000
 
-# Comando por defecto
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+# Comando por defecto (usa router.php para servir /resources)
+CMD ["php", "-S", "0.0.0.0:8000", "public/router.php"]
 

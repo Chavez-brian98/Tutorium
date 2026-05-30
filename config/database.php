@@ -39,38 +39,33 @@ class Database
      * @return PDO
      * @throws PDOException
      */
-    private static function createConnection()
-    {
-        // Leer variables de entorno
-        $db_host = getenv('DB_HOST') ?: 'localhost';
-        $db_port = getenv('DB_PORT') ?: 3306;
-        $db_name = getenv('DB_NAME') ?: 'tutorium_db';
-        $db_user = getenv('DB_USER') ?: 'root';
-        $db_password = getenv('DB_PASSWORD') ?: '';
+   private static function createConnection()
+{
+    $db_host     = getenv('DB_HOST') ?: 'mysql';
+    $db_port     = getenv('DB_PORT') ?: 3306;
+    $db_name     = getenv('DB_NAME') ?: 'tutorium_db';
+    $db_user     = getenv('DB_USER') ?: 'root';
+    $db_password = getenv('DB_PASSWORD') ?: 'root';
 
-        try {
-            // PDO DSN (Data Source Name)
-            $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4";
+    try {
+        $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4";
 
-            // Opciones de conexión
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ];
+        $options = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ];
 
-            // Crear conexión
-            $pdo = new PDO($dsn, $db_user, $db_password, $options);
+        $pdo = new PDO($dsn, $db_user, $db_password, $options);
+        $pdo->exec("SET NAMES utf8mb4");
+        $pdo->exec("SET time_zone = '-06:00'");
 
-            // Configurar charset
-            $pdo->exec("SET NAMES utf8mb4");
+        return $pdo;
 
-            return $pdo;
-
-        } catch (PDOException $e) {
-            throw new PDOException('Error de conexión a base de datos: ' . $e->getMessage());
-        }
+    } catch (PDOException $e) {
+        throw new PDOException('Error de conexión a base de datos: ' . $e->getMessage());
     }
+}
 
     /**
      * Cerrar la conexión

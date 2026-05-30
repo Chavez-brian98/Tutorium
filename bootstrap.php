@@ -3,6 +3,10 @@
 /**
  * Bootstrap - Carga configuración y variables de entorno
  */
+session_start();
+
+// Agrega esto al inicio del bootstrap.php
+date_default_timezone_set('America/El_Salvador');
 
 // Ruta base del proyecto
 $basePath = __DIR__;
@@ -17,7 +21,7 @@ if (file_exists($envFile)) {
  * Cargar variables desde archivo .env
  * Formato: KEY=value
  */
-function loadEnvFile($filePath)
+function loadEnvFile($filePath): void
 {
     if (!file_exists($filePath)) {
         return;

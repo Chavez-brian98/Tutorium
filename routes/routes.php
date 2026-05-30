@@ -2,33 +2,110 @@
 
 /**
  * Definición de Rutas de la Aplicación
- *
- * Ejemplos:
- *   Router::get('/', function() { ... });
- *   Router::post('/users', 'UserController@store');
- *   Router::get('/users/{id}', 'UserController@show');
  */
 
 use App\Router;
-use App\Database;
+use App\Controller\AttendanceController;
+use App\Controller\EvaluationController;
+use App\Controller\MaterialController;
+use App\Controller\SessionController;
 
-// Ruta principal (usa layout base para incluir CDNs y assets globales)
+// ==========================================
+// RUTAS DE AUTENTICACIÓN (LOGIN)
+// ==========================================
+
 Router::get('/', function () {
-    return view('layout/base', [
-        'title' => 'Login Tutorium',
-        'content' => view('auth/login'),
-    ]);
+    return view('auth/login', ['title' => 'Login Tutorium']);
+});
+
+Router::get('/login', function () {
+    return view('auth/login', ['title' => 'Login Tutorium']);
+});
+
+Router::post('/login', 'Auth\\LoginController@handle');
+
+
+// ==========================================
+// VISTAS DEL DASHBOARD / SECCIONES
+// ==========================================
+
+// USUARIOS (Corregido: Ya no llama a layout/base manualmente)
+Router::get('/users/inicio', function () {
+    return view('users/inicio', ['title' => 'Mis tutorias']);
+});
+
+// ADMINISTRADOR (Corregido: Ya no llama a layout/base manualmente)
+Router::get('/admin/dashboard', function () {
+    return view('admin/dashboard', ['title' => 'Dashboard']);
+});
+
+Router::get('/dashboard', function () {
+    return view('Dashboard/Dashboard', ['title' => 'Dashboard']);
+});
+
+Router::get('/tutorias', function () {
+    $controller = new \App\Controller\TutorialController();
+    return $controller->index();
+});
+
+// NUEVA RUTA DINÁMICA: Capta el ID de la tutoría de forma limpia
+Router::get('/tutorias/{tutoria_id}/sesiones', function ($tutoria_id) {
+    $controller = new SessionController();
+    return $controller->mostrar($tutoria_id);
+});
+
+Router::get('/tutorias/admin', function () {
+    return view('admin/TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
+});
+
+Router::get('/evaluaciones', function () {
+    return view('/usersEvaluationHistory/EvaluationHistory', ['title' => 'Evaluaciones']);
+});
+
+Router::get('/perfil', function () {
+    return view('Profile/Profile', ['title' => 'Perfil']);
 });
 
 
-// Ejemplo con Controlador (descomenta para usar)
-// Router::get('/users', 'ExampleUserController@index');
-// Router::get('/users/{id}', 'ExampleUserController@show');
-// Router::post('/users', 'ExampleUserController@store');
+// ==========================================
+// CONTROLADORES Y PROCESOS (POST/GET)
+// ==========================================
 
-/**
- * Helper para renderizar vistas
- */
+Router::get('/evaluation/crear', function () {
+    $controller = new EvaluationController();
+    return $controller->mostrarFormulario();
+});
+
+Router::post('/evaluation/guardar', function () {
+    $controller = new EvaluationController();
+    return $controller->guardar();
+});
+
+Router::post('/evaluation/importar-xml', function () {
+    $controller = new EvaluationController();
+    return $controller->importarXML();
+});
+
+Router::post('/attendance/marcar', function () {
+    $controller = new AttendanceController();
+    return $controller->marcar();
+});
+
+Router::post('/material/guardar', function () {
+    $controller = new MaterialController();
+    return $controller->guardar();
+});
+
+Router::post('/session/guardarLink', function () {
+    $controller = new SessionController();
+    return $controller->guardarLink();
+});
+
+
+// ==========================================
+// HELPER PARA RENDERIZAR VISTAS
+// ==========================================
+
 function view($name, $data = [])
 {
     extract($data);
@@ -36,12 +113,25 @@ function view($name, $data = [])
 
     if (!file_exists($viewPath)) {
         http_response_code(404);
-        return json_encode(['error' => "Vista $name no encontrada"]);
+        echo "Vista $name no encontrada";
+        return;
+    }
+
+    // Evita bucles: Si se pide directamente el layout base, solo lo incluye
+    $sinLayout = ['layout/base'];
+
+    if (in_array($name, $sinLayout)) {
+        ob_start();
+        include $viewPath;
+        return ob_get_clean();
     }
 
     ob_start();
     include $viewPath;
+    $content = ob_get_clean();
+
+    $layoutPath = __DIR__ . '/../resources/view/layout/base.php';
+    ob_start();
+    include $layoutPath;
     return ob_get_clean();
 }
-
-

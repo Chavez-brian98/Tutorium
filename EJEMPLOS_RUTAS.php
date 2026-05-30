@@ -138,7 +138,7 @@ Router::post('/usuarios', function () {
     $nombre = $_POST['nombre'] ?? '';
     $email = $_POST['email'] ?? '';
 
-    return 'Crear usuario: ' . $nombre . ' / ' . $email;
+    return 'Crear users: ' . $nombre . ' / ' . $email;
 });
 */
 
@@ -185,7 +185,7 @@ Router::delete('/productos/{id}', function ($id) {
 
 /*
 Router::get('/login', function () {
-    return view('auth/login');
+    return view('Auth/login');
 });
 
 Router::get('/perfil', function () {
@@ -217,9 +217,9 @@ Router::post('/admin/users', 'ExampleUserController@store');
 Router::put('/admin/users/{id}', 'ExampleUserController@update');
 Router::delete('/admin/users/{id}', 'ExampleUserController@destroy');
 
-Router::get('/auth/login', 'AuthController@loginForm');
-Router::post('/auth/login', 'AuthController@login');
-Router::get('/auth/logout', 'AuthController@logout');
+Router::get('/Auth/login', 'AuthController@loginForm');
+Router::post('/Auth/login', 'AuthController@login');
+Router::get('/Auth/logout', 'AuthController@logout');
 */
 
 // ============================================================================
@@ -229,7 +229,7 @@ Router::get('/auth/logout', 'AuthController@logout');
 /*
 // Mostrar formulario de login
 Router::get('/login', function () {
-    return view('auth/login');
+    return view('Auth/login');
 });
 
 // Procesar login
@@ -246,9 +246,9 @@ Router::get('/logout', function () {
     exit;
 });
 
-// Perfil de usuario
+// Perfil de users
 Router::get('/perfil/{id}', function ($id) {
-    return 'Perfil del usuario ' . $id;
+    return 'Perfil del users ' . $id;
 });
 */
 
@@ -320,7 +320,7 @@ Router::get('/login', function () {
 <script src="<?= cdn('bootstrap/5.0.0/js/bootstrap.bundle.min.js') ?>"></script>
 
 // URL completa basada en APP_URL:
-<a href="<?= route_url('/users/123') ?>">Ver usuario</a>
+<a href="<?= route_url('/users/123') ?>">Ver users</a>
 */
 
 // ============================================================================
@@ -328,7 +328,7 @@ Router::get('/login', function () {
 // ============================================================================
 
 /*
-<!-- resources/view/auth/login.php -->
+<!-- resources/view/Auth/login.php -->
 <form action="<?= url('/login') ?>" method="post">
     <input type="email" name="email" placeholder="Correo">
     <input type="password" name="password" placeholder="Contraseña">

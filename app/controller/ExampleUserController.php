@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Database;
 
-class UserController
+class ExampleUserController
 {
     public function index()
     {

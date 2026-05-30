@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Servicio PHP
@@ -23,7 +23,6 @@ services:
       - mysql
     networks:
       - tutorium-network
-    command: php -S 0.0.0.0:8000 -t public
 
   # Servicio MySQL
   mysql:
@@ -34,6 +33,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: America/El_Salvador
     ports:
       - "3306:3306"
     volumes:
@@ -67,4 +67,3 @@ volumes:
 networks:
   tutorium-network:
     driver: bridge
-
