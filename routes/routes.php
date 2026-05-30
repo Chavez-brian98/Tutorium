@@ -18,6 +18,9 @@ Router::get('/', function () {
     return view('auth/login', ['title' => 'Login Tutorium']);
 });
 
+Router::get('/login', function () {
+    return view('auth/login', ['title' => 'Login Tutorium']);
+});
 
 Router::post('/login', 'Auth\\LoginController@handle');
 
@@ -41,7 +44,14 @@ Router::get('/dashboard', function () {
 });
 
 Router::get('/tutorias', function () {
-    return view('/users/TutorialsUser/Tutorial', ['title' => 'Tutorías']);
+    $controller = new \App\Controller\TutorialController();
+    return $controller->index();
+});
+
+// NUEVA RUTA DINÁMICA: Capta el ID de la tutoría de forma limpia
+Router::get('/tutorias/{tutoria_id}/sesiones', function ($tutoria_id) {
+    $controller = new SessionController();
+    return $controller->mostrar($tutoria_id);
 });
 
 Router::get('/tutorias/admin', function () {
@@ -79,11 +89,6 @@ Router::post('/evaluation/importar-xml', function () {
 Router::post('/attendance/marcar', function () {
     $controller = new AttendanceController();
     return $controller->marcar();
-});
-
-Router::get('/session', function () {
-    $controller = new SessionController();
-    return $controller->mostrar(1);
 });
 
 Router::post('/material/guardar', function () {

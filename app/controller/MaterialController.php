@@ -1,14 +1,13 @@
 <?php
 
 namespace App\Controller;
-
-require_once __DIR__ . '/../model/Material.php';
+use App\Model\Material;
 
 class MaterialController {
     private $materialModel;
 
     public function __construct() {
-        $this->materialModel = new Material();
+        $this->materialModel = new \App\Model\Material();
     }
 
     // POST /material/guardar

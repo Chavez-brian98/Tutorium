@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Controller;
-
-require_once __DIR__ . '/../model/Evaluation.php';
-require_once __DIR__ . '/../model/Ask.php';
-require_once __DIR__ . '/../model/AnswerOption.php';
+ use App\Model\Evaluation;
+ use App\Model\Ask;
+ use App\Model\AnswerOption;
 
 class EvaluationController {
 
@@ -13,11 +12,12 @@ class EvaluationController {
     private $answerOptionModel;
 
     public function __construct() {
-        $this->evaluationModel   = new Evaluation();
-        $this->askModel          = new Ask();
-        $this->answerOptionModel = new AnswerOption();
+        $this->evaluationModel   = new \App\Model\Evaluation();
+        $this->askModel          = new \App\Model\Ask();
+        $this->answerOptionModel = new \App\Model\AnswerOption();
     }
 
+    // GET /evaluation/crear
     // GET /evaluation/crear
     public function mostrarFormulario() {
         $tutoria_id = (int) ($_GET['tutoria_id'] ?? 0);
@@ -28,7 +28,8 @@ class EvaluationController {
             return;
         }
 
-        return view('Evaluation/Evaluation', [
+        // CORRECCIÓN DE RUTA: Apunta exactamente a 'Evaluation/Evaluation' respetando las mayúsculas
+        return view('users/Evaluation/Evaluation', [
             'tutoria_id' => $tutoria_id,
         ]);
     }
@@ -78,7 +79,12 @@ class EvaluationController {
             // cerrada no tiene opciones, no hace nada más
         }
 
-        header('Location: /session?ok=evaluacion');
+        if ($tutoria_id > 0) {
+            header("Location: /tutorias/{$tutoria_id}/sesiones?numero=1&ok=evaluacion");
+        } else {
+            // Si por alguna razón mística el ID llegó en 0, te manda al listado general de tutorías
+            header("Location: /tutorias"); 
+        }
         exit;
     }
 
@@ -143,7 +149,7 @@ class EvaluationController {
             }
         }
 
-        header('Location: /session?ok=evaluacion');
+        header("Location: /tutorias/{$tutoria_id}/sesiones?numero=1&ok=evaluacion");
         exit;
     }
 }

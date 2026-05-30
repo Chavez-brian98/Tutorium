@@ -97,14 +97,36 @@ class Router
             return self::executeCallback(self::$routes[$method][$uri]);
         }
 
-        // Buscar ruta con parámetros
-        foreach (self::$routes[$method] as $path => $callback) {
+        // Buscar ruta con parámetros FOREACH PARA VER SI FUNCIONA CON OTRO
+       /* foreach (self::$routes[$method] as $path => $callback) {
             $pattern = self::pathToRegex($path);
             if (preg_match($pattern, $uri, $matches)) {
                 array_shift($matches); // Remover el match completo
                 return self::executeCallback($callback, $matches);
             }
-        }
+        }*/
+
+        // ASÍ DEBE QUEDAR (CORREGIDO):
+        // DENTRO DE SRC/ROUTER.PHP -> METODO DISPATCH:
+foreach (self::$routes[$method] as $path => $callback) {
+    $pattern = self::pathToRegex($path);
+    
+    if (preg_match($pattern, $uri, $matches)) {
+        // 1. Filtrar el array para quedarnos ÚNICAMENTE con las llaves numéricas
+        $limpios = array_filter($matches, function($key) {
+            return is_int($key);
+        }, ARRAY_FILTER_USE_KEY);
+
+        // 2. CORRECCIÓN CRÍTICA:
+        // El primer elemento de $matches siempre es la URL completa (ej: '/tutorias/1/sesiones').
+        // Al usar array_values(), ese texto se quedaba en la posición 0.
+        // Con array_shift quitamos la URL completa antes de mandar los parámetros reales.
+        array_shift($limpios); 
+
+        // 3. Ejecutar el callback pasando solo los ID puros (ej: [1])
+        return self::executeCallback($callback, array_values($limpios));
+    }
+}
 
         // Ruta no encontrada
         http_response_code(404);

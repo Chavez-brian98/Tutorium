@@ -1,7 +1,9 @@
 <?php
+include __DIR__ . '/../../layout/sidebar.php';
 // Variables que llegan desde SessionController::mostrar():
 // $sesion, $sesiones, $tutoria_id, $numero, $sesion_id, $alumno_id, $yaAsistencia, $asisPresente
 ?>
+<div class="min-h-screen md:ml-64 p-6 md:p-8">
 
 <h1 class="text-xl font-semibold mb-4">Asignatura: <?= htmlspecialchars($materia) ?></h1>
 
@@ -10,11 +12,11 @@
     <!-- Columna izquierda -->
     <div class="w-48 bg-white shadow p-4 flex flex-col gap-2">
         <?php foreach ($sesiones as $s): ?>
-            <a href="/session?numero=<?= $s['numero'] ?>"
-               class="text-center py-2 px-4 rounded-xl border text-sm
-                      <?= $numero == $s['numero']
-                          ? 'bg-[#800000]/90 border-[#9e2820] font-semibold text-white'
-                          : 'hover:bg-gray-100' ?>">
+            <a href="/tutorias/<?= $tutoria_id ?>/sesiones?numero=<?= $s['numero'] ?>"
+            class="text-center py-2 px-4 rounded-xl border text-sm
+                    <?= $numero == $s['numero']
+                        ? 'bg-[#800000]/90 border-[#9e2820] font-semibold text-white'
+                        : 'hover:bg-gray-100' ?>">
                 Sesión <?= $s['numero'] ?>
             </a>
         <?php endforeach; ?>
@@ -105,7 +107,7 @@
 
     </div>
 </div>
-
+</div>
 <!-- Modal crear evaluación -->
 <div id="modal-evaluacion"
      class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">

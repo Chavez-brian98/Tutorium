@@ -253,7 +253,6 @@ function guardarConfigEvaluacion() {
     return;
   }
 
-  // Verificar cantidades válidas
   let totalPreguntas = 0;
   const tipos = [];
   const distribucionManual = {};
@@ -277,9 +276,16 @@ function guardarConfigEvaluacion() {
     totalPreguntas += cantidad;
   }
 
-  // Pasar a Evaluation.php
+  // CORRECCIÓN EXTRAORDINARIA: Capturar el id real de la tutoría desde la URL actual del navegador
+  const urlParams = new URLSearchParams(window.location.search);
+  // Si estás en la ruta /tutorias/5/sesiones, podemos extraer el ID dividiendo la ruta de la URL:
+  const segmentosRuta = window.location.pathname.split("/");
+  // El ID suele ser el elemento intermedio en '/tutorias/{id}/sesiones'
+  const idDetectado = segmentosRuta[2] ? parseInt(segmentosRuta[2]) : 1;
+
+  // Pasar los parámetros correctos a Evaluation.php
   const params = new URLSearchParams({
-    tutoria_id: 1,
+    tutoria_id: idDetectado, //  ¡CORREGIDO! Ya no es estático
     titulo: titulo,
     descripcion: descripcion,
     total: totalPreguntas,

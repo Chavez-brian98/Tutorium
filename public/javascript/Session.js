@@ -1,19 +1,36 @@
-// ── Toast flash ──────────────────────────────────────────
-if (FLASH === "evaluacion") {
-  Swal.fire({
-    toast: true,
-    position: "top-end",
-    icon: "success",
-    title: "Evaluación creada correctamente",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-  });
+document.addEventListener("DOMContentLoaded", function () {
+  // 1. Analizar si existen parámetros de éxito en la URL actual
+  const urlParams = new URLSearchParams(window.location.search);
 
-  const url = new URL(window.location.href);
-  url.searchParams.delete("ok");
-  history.replaceState(null, "", url.toString());
-}
+  if (urlParams.get("ok") === "evaluacion") {
+    // 2. Disparar el Toast de SweetAlert2
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 4000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+      },
+    });
+
+    Toast.fire({
+      icon: "success",
+      title: "¡Evaluación creada con éxito!",
+    });
+
+    // 3. Opcional: Limpiar la URL para que no vuelva a salir el toast si el usuario refresca la página
+    const limpiaUrl =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname +
+      "?numero=1";
+    window.history.replaceState({ path: limpiaUrl }, "", limpiaUrl);
+  }
+});
 
 // ── Toggle edición ───────────────────────────────────────
 let editorInstance = null;
