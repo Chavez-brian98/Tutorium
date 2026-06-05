@@ -9,6 +9,8 @@ use App\Controller\AttendanceController;
 use App\Controller\EvaluationController;
 use App\Controller\MaterialController;
 use App\Controller\SessionController;
+use App\Controller\TutoriasController;
+use App\Controller\UsuariosController;
 
 // ==========================================
 // RUTAS DE AUTENTICACIÓN (LOGIN)
@@ -40,7 +42,7 @@ Router::get('/admin/dashboard', function () {
 });
 
 Router::get('/dashboard', function () {
-    return view('Dashboard/Dashboard', ['title' => 'Dashboard']);
+    return view('admin/dashboard', ['title' => 'Dashboard']);
 });
 
 Router::get('/tutorias', function () {
@@ -55,7 +57,18 @@ Router::get('/tutorias/{tutoria_id}/sesiones', function ($tutoria_id) {
 });
 
 Router::get('/tutorias/admin', function () {
-    return view('admin/TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
+    $controller = new TutoriasController();
+    return $controller->index();
+});
+
+Router::get('/materias', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->index();
+});
+
+Router::get('/usuarios', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->index();
 });
 
 Router::get('/evaluaciones', function () {
@@ -244,6 +257,51 @@ Router::post('/attendance/marcar', function () {
 Router::post('/material/guardar', function () {
     $controller = new MaterialController();
     return $controller->guardar();
+});
+
+Router::post('/materias/guardar', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->guardar();
+});
+
+Router::post('/materias/actualizar', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->actualizar();
+});
+
+Router::post('/materias/eliminar', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->eliminar();
+});
+
+Router::post('/tutorias/guardar', function () {
+    $controller = new \App\Controller\TutoriasController();
+    return $controller->guardar();
+});
+
+Router::post('/tutorias/actualizar', function () {
+    $controller = new \App\Controller\TutoriasController();
+    return $controller->actualizar();
+});
+
+Router::post('/tutorias/eliminar', function () {
+    $controller = new \App\Controller\TutoriasController();
+    return $controller->eliminar();
+});
+
+Router::post('/usuarios/guardar', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->guardar();
+});
+
+Router::post('/usuarios/actualizar', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->actualizar();
+});
+
+Router::post('/usuarios/eliminar', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->eliminar();
 });
 
 Router::post('/session/guardarLink', function () {

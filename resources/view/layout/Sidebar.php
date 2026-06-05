@@ -19,6 +19,7 @@ $menuAdmin = [
         ['icono' => 'fas fa-graduation-cap', 'label' => 'Tutorías',     'ruta' => '/tutorias/admin'],
         ['icono' => 'fas fa-clipboard-list', 'label' => 'Evaluaciones', 'ruta' => '/evaluaciones'],
         ['icono' => 'fas fa-book',           'label' => 'Materias',     'ruta' => '/materias'],
+        ['icono' => 'fas fa-users',          'label' => 'Usuarios',     'ruta' => '/usuarios'],
 ];
 
 $menuTutorAlumno = [
