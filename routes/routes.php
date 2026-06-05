@@ -9,6 +9,7 @@ use App\Controller\AttendanceController;
 use App\Controller\EvaluationController;
 use App\Controller\MaterialController;
 use App\Controller\SessionController;
+use App\Controller\UsuariosController;
 
 // ==========================================
 // RUTAS DE AUTENTICACIÓN (LOGIN)
@@ -58,6 +59,16 @@ Router::get('/tutorias/admin', function () {
     return view('admin/TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
 });
 
+Router::get('/materias', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->index();
+});
+
+Router::get('/usuarios', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->index();
+});
+
 Router::get('/evaluaciones', function () {
     return view('/usersEvaluationHistory/EvaluationHistory', ['title' => 'Evaluaciones']);
 });
@@ -94,6 +105,36 @@ Router::post('/attendance/marcar', function () {
 Router::post('/material/guardar', function () {
     $controller = new MaterialController();
     return $controller->guardar();
+});
+
+Router::post('/materias/guardar', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->guardar();
+});
+
+Router::post('/materias/actualizar', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->actualizar();
+});
+
+Router::post('/materias/eliminar', function () {
+    $controller = new \App\Controller\MateriasController();
+    return $controller->eliminar();
+});
+
+Router::post('/usuarios/guardar', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->guardar();
+});
+
+Router::post('/usuarios/actualizar', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->actualizar();
+});
+
+Router::post('/usuarios/eliminar', function () {
+    $controller = new \App\Controller\UsuariosController();
+    return $controller->eliminar();
 });
 
 Router::post('/session/guardarLink', function () {
