@@ -38,13 +38,19 @@ $materiasInactivas = $totalMaterias - $materiasActivas;
         </article>
     </div>
 
-    <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6">
+    <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6" style="background:white; border-radius:16px; border-top:8px solid var(--granate-600); padding:24px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-granate">Catálogo de Materias</h2>
                 <p class="mt-2 text-secundario">Revisa, edita o elimina las materias existentes.</p>
             </div>
-            <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= $totalMaterias ?></span>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div class="relative w-full max-w-xs">
+                    <input id="searchInput" type="search" placeholder="Buscar materia..." class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" />
+                    <span class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">🔍</span>
+                </div>
+                <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= $totalMaterias ?></span>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -72,18 +78,30 @@ $materiasInactivas = $totalMaterias - $materiasActivas;
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 text-center">
-                                    <button type="button"
-                                            class="btn btn-outline mr-2 js-edit-materia-btn"
-                                            data-id="<?= (int) $materia['id'] ?>"
-                                            data-nombre="<?= htmlspecialchars($materia['nombre'], ENT_QUOTES) ?>"
-                                            data-codigo="<?= htmlspecialchars($materia['codigo'], ENT_QUOTES) ?>"
-                                            data-descripcion="<?= htmlspecialchars($materia['descripcion'], ENT_QUOTES) ?>"
-                                            data-estado="<?= htmlspecialchars($materia['estado'], ENT_QUOTES) ?>">
-                                        Editar
-                                    </button>
-                                    <button type="button"
-                                            onclick="confirmDelete(<?= (int) $materia['id'] ?>)"
-                                            class="btn btn-danger">Eliminar</button>
+                                    <div class="inline-flex items-center justify-center gap-2">
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-granate hover:bg-granate hover:text-white js-edit-materia-btn"
+                                                title="Editar"
+                                                data-id="<?= (int) $materia['id'] ?>"
+                                                data-nombre="<?= htmlspecialchars($materia['nombre'], ENT_QUOTES) ?>"
+                                                data-codigo="<?= htmlspecialchars($materia['codigo'], ENT_QUOTES) ?>"
+                                                data-descripcion="<?= htmlspecialchars($materia['descripcion'], ENT_QUOTES) ?>"
+                                                data-estado="<?= htmlspecialchars($materia['estado'], ENT_QUOTES) ?>">
+                                            ✎
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-red-400 hover:bg-red-500 hover:text-white"
+                                                title="Eliminar"
+                                                onclick="confirmDelete(<?= (int) $materia['id'] ?>)">
+                                            🗑
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-granate hover:bg-granate hover:text-white"
+                                                title="Ver detalle"
+                                                onclick="openDetailModal('<?= htmlspecialchars($materia['nombre'], ENT_QUOTES) ?>', '<?= htmlspecialchars($materia['codigo'], ENT_QUOTES) ?>', '<?= htmlspecialchars($materia['descripcion'], ENT_QUOTES) ?>', '<?= htmlspecialchars($materia['estado'], ENT_QUOTES) ?>')">
+                                            👁
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -101,6 +119,29 @@ $materiasInactivas = $totalMaterias - $materiasActivas;
 <form id="deleteMateriaForm" action="/materias/eliminar" method="post" hidden>
     <input type="hidden" name="id" id="deleteMateriaId">
 </form>
+
+<div id="detailMateriaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-xl rounded-[32px] bg-white p-6 shadow-2xl">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-2xl font-bold text-granate">Detalle de materia</h3>
+                <p class="text-sm text-secundario">Revisa la información completa de la materia seleccionada.</p>
+            </div>
+            <button type="button" onclick="closeDetailModal()" class="text-slate-500 hover:text-granate">Cerrar</button>
+        </div>
+
+        <div class="space-y-4 text-sm text-slate-700">
+            <div><span class="font-semibold text-slate-800">Nombre:</span> <span id="detailNombre"></span></div>
+            <div><span class="font-semibold text-slate-800">Código:</span> <span id="detailCodigo"></span></div>
+            <div><span class="font-semibold text-slate-800">Descripción:</span> <span id="detailDescripcion"></span></div>
+            <div><span class="font-semibold text-slate-800">Estado:</span> <span id="detailEstado"></span></div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button type="button" onclick="closeDetailModal()" class="btn btn-primary px-5 py-3">Cerrar</button>
+        </div>
+    </div>
+</div>
 
 <div id="createModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
     <div class="w-full max-w-2xl rounded-[32px] bg-white p-6 shadow-2xl">
@@ -207,6 +248,30 @@ $materiasInactivas = $totalMaterias - $materiasActivas;
     function closeEditModal() {
         document.getElementById('editModal').classList.add('hidden');
     }
+
+    function openDetailModal(nombre, codigo, descripcion, estado) {
+        document.getElementById('detailNombre').textContent = nombre;
+        document.getElementById('detailCodigo').textContent = codigo;
+        document.getElementById('detailDescripcion').textContent = descripcion;
+        document.getElementById('detailEstado').textContent = estado;
+
+        document.getElementById('detailMateriaModal').classList.remove('hidden');
+        document.getElementById('detailMateriaModal').classList.add('flex');
+    }
+
+    function closeDetailModal() {
+        document.getElementById('detailMateriaModal').classList.add('hidden');
+    }
+
+    function filterMateriasTable() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach((row) => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterMateriasTable);
 
     document.querySelectorAll('.js-edit-materia-btn').forEach((button) => {
         button.addEventListener('click', function () {

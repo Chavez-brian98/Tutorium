@@ -43,13 +43,19 @@ $canceladas = count(array_filter($tutorias, fn($item) => strtoupper($item['estad
         </article>
     </div>
 
-    <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6">
+    <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6" style="background:white; border-radius:16px; border-top:8px solid var(--granate-600); padding:24px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-granate">Catálogo de Tutorías</h2>
                 <p class="mt-2 text-secundario">Revisa, edita o elimina las tutorías existentes.</p>
             </div>
-            <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= $totalTutorias ?></span>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div class="relative w-full max-w-xs">
+                    <input id="searchTutoriasInput" type="search" placeholder="Buscar tutoría..." class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" />
+                    <span class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">🔍</span>
+                </div>
+                <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= $totalTutorias ?></span>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -85,22 +91,37 @@ $canceladas = count(array_filter($tutorias, fn($item) => strtoupper($item['estad
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 text-center">
-                                    <button type="button"
-                                            class="btn btn-outline mr-2 js-edit-tutoria-btn"
-                                            data-id="<?= (int) $tutoria['id'] ?>"
-                                            data-alumno-id="<?= (int) $tutoria['alumno_id'] ?>"
-                                            data-tutor-id="<?= (int) $tutoria['tutor_id'] ?>"
-                                            data-materia-id="<?= (int) $tutoria['materia_id'] ?>"
-                                            data-fecha="<?= htmlspecialchars($tutoria['fecha'], ENT_QUOTES) ?>"
-                                            data-hora-inicio="<?= htmlspecialchars($tutoria['hora_inicio'], ENT_QUOTES) ?>"
-                                            data-hora-fin="<?= htmlspecialchars($tutoria['hora_fin'], ENT_QUOTES) ?>"
-                                            data-num-sesiones="<?= (int) $tutoria['num_sesiones'] ?>"
-                                            data-estado="<?= htmlspecialchars($tutoria['estado'], ENT_QUOTES) ?>">
-                                        Editar
-                                    </button>
-                                    <button type="button"
-                                            onclick="confirmDeleteTutoria(<?= (int) $tutoria['id'] ?>)"
-                                            class="btn btn-danger">Eliminar</button>
+                                    <div class="inline-flex items-center justify-center gap-2">
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-granate hover:bg-granate hover:text-white js-edit-tutoria-btn"
+                                                title="Editar"
+                                                data-id="<?= (int) $tutoria['id'] ?>"
+                                                data-alumno-id="<?= (int) $tutoria['alumno_id'] ?>"
+                                                data-alumno-nombre="<?= htmlspecialchars($tutoria['alumno_nombre'], ENT_QUOTES) ?>"
+                                                data-tutor-id="<?= (int) $tutoria['tutor_id'] ?>"
+                                                data-tutor-nombre="<?= htmlspecialchars($tutoria['tutor_nombre'], ENT_QUOTES) ?>"
+                                                data-materia-id="<?= (int) $tutoria['materia_id'] ?>"
+                                                data-materia-nombre="<?= htmlspecialchars($tutoria['materia_nombre'], ENT_QUOTES) ?>"
+                                                data-fecha="<?= htmlspecialchars($tutoria['fecha'], ENT_QUOTES) ?>"
+                                                data-hora-inicio="<?= htmlspecialchars($tutoria['hora_inicio'], ENT_QUOTES) ?>"
+                                                data-hora-fin="<?= htmlspecialchars($tutoria['hora_fin'], ENT_QUOTES) ?>"
+                                                data-num-sesiones="<?= (int) $tutoria['num_sesiones'] ?>"
+                                                data-estado="<?= htmlspecialchars($tutoria['estado'], ENT_QUOTES) ?>">
+                                            ✎
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-red-400 hover:bg-red-500 hover:text-white"
+                                                title="Eliminar"
+                                                onclick="confirmDeleteTutoria(<?= (int) $tutoria['id'] ?>)">
+                                            🗑
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-granate hover:bg-granate hover:text-white"
+                                                title="Ver detalle"
+                                                onclick="openDetailTutoriaModal('<?= htmlspecialchars($tutoria['alumno_nombre'], ENT_QUOTES) ?>', '<?= htmlspecialchars($tutoria['tutor_nombre'], ENT_QUOTES) ?>', '<?= htmlspecialchars($tutoria['materia_nombre'], ENT_QUOTES) ?>', '<?= htmlspecialchars($tutoria['fecha'], ENT_QUOTES) ?>', '<?= htmlspecialchars($tutoria['hora_inicio'], ENT_QUOTES) ?>', '<?= htmlspecialchars($tutoria['hora_fin'], ENT_QUOTES) ?>', '<?= (int) $tutoria['num_sesiones'] ?>', '<?= htmlspecialchars($tutoria['estado'], ENT_QUOTES) ?>')">
+                                            👁
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -118,6 +139,33 @@ $canceladas = count(array_filter($tutorias, fn($item) => strtoupper($item['estad
 <form id="deleteTutoriaForm" action="/tutorias/eliminar" method="post" hidden>
     <input type="hidden" name="id" id="deleteTutoriaId">
 </form>
+
+<div id="detailTutoriaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-xl rounded-[32px] bg-white p-6 shadow-2xl">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-2xl font-bold text-granate">Detalle de tutoría</h3>
+                <p class="text-sm text-secundario">Revisa la información completa de la tutoría seleccionada.</p>
+            </div>
+            <button type="button" onclick="closeDetailTutoriaModal()" class="text-slate-500 hover:text-granate">Cerrar</button>
+        </div>
+
+        <div class="space-y-4 text-sm text-slate-700">
+            <div><span class="font-semibold text-slate-800">Alumno:</span> <span id="detailTutoriaAlumno"></span></div>
+            <div><span class="font-semibold text-slate-800">Tutor:</span> <span id="detailTutoriaTutor"></span></div>
+            <div><span class="font-semibold text-slate-800">Materia:</span> <span id="detailTutoriaMateria"></span></div>
+            <div><span class="font-semibold text-slate-800">Fecha:</span> <span id="detailTutoriaFecha"></span></div>
+            <div><span class="font-semibold text-slate-800">Hora inicio:</span> <span id="detailTutoriaHoraInicio"></span></div>
+            <div><span class="font-semibold text-slate-800">Hora fin:</span> <span id="detailTutoriaHoraFin"></span></div>
+            <div><span class="font-semibold text-slate-800">Sesiones:</span> <span id="detailTutoriaSesiones"></span></div>
+            <div><span class="font-semibold text-slate-800">Estado:</span> <span id="detailTutoriaEstado"></span></div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button type="button" onclick="closeDetailTutoriaModal()" class="btn btn-primary px-5 py-3">Cerrar</button>
+        </div>
+    </div>
+</div>
 
 <div id="createTutoriaModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
     <div class="w-full max-w-2xl rounded-[32px] bg-white p-6 shadow-2xl">
@@ -316,6 +364,33 @@ $canceladas = count(array_filter($tutorias, fn($item) => strtoupper($item['estad
             );
         });
     });
+
+    function openDetailTutoriaModal(alumno, tutor, materia, fecha, horaInicio, horaFin, sesiones, estado) {
+        document.getElementById('detailTutoriaAlumno').textContent = alumno;
+        document.getElementById('detailTutoriaTutor').textContent = tutor;
+        document.getElementById('detailTutoriaMateria').textContent = materia;
+        document.getElementById('detailTutoriaFecha').textContent = fecha;
+        document.getElementById('detailTutoriaHoraInicio').textContent = horaInicio;
+        document.getElementById('detailTutoriaHoraFin').textContent = horaFin;
+        document.getElementById('detailTutoriaSesiones').textContent = sesiones;
+        document.getElementById('detailTutoriaEstado').textContent = estado;
+
+        document.getElementById('detailTutoriaModal').classList.remove('hidden');
+        document.getElementById('detailTutoriaModal').classList.add('flex');
+    }
+
+    function closeDetailTutoriaModal() {
+        document.getElementById('detailTutoriaModal').classList.add('hidden');
+    }
+
+    function filterTutoriasTable() {
+        const term = document.getElementById('searchTutoriasInput').value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach((row) => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    }
+    document.getElementById('searchTutoriasInput').addEventListener('input', filterTutoriasTable);
 
     function confirmDeleteTutoria(id) {
         if (!window.appAlerts) {

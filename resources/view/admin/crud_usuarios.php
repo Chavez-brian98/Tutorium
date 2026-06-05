@@ -38,13 +38,19 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
         </article>
     </div>
 
-    <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6">
+    <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6" style="background:white; border-radius:16px; border-top:8px solid var(--granate-600); padding:24px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-granate">Catalogo de Usuarios</h2>
                 <p class="mt-2 text-secundario">Revisa, edita o elimina los usuarios registrados.</p>
             </div>
-            <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= $totalUsuarios ?></span>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div class="relative w-full max-w-xs">
+                    <input id="searchUsuariosInput" type="search" placeholder="Buscar usuario..." class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" />
+                    <span class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">🔍</span>
+                </div>
+                <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= $totalUsuarios ?></span>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
@@ -76,20 +82,32 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 text-center">
-                                    <button type="button"
-                                            class="btn btn-outline mr-2 js-edit-usuario-btn"
-                                            data-id="<?= (int) $usuario['id'] ?>"
-                                            data-nombres="<?= htmlspecialchars($usuario['nombres'], ENT_QUOTES) ?>"
-                                            data-apellidos="<?= htmlspecialchars($usuario['apellidos'], ENT_QUOTES) ?>"
-                                            data-email="<?= htmlspecialchars($usuario['email'], ENT_QUOTES) ?>"
-                                            data-telefono="<?= htmlspecialchars($usuario['telefono'] ?? '', ENT_QUOTES) ?>"
-                                            data-rol="<?= htmlspecialchars($usuario['rol'] ?? '', ENT_QUOTES) ?>"
-                                            data-estado="<?= htmlspecialchars($usuario['estado'] ?? '', ENT_QUOTES) ?>">
-                                        Editar
-                                    </button>
-                                    <button type="button"
-                                            onclick="confirmDeleteUsuario(<?= (int) $usuario['id'] ?>)"
-                                            class="btn btn-danger">Eliminar</button>
+                                    <div class="inline-flex items-center justify-center gap-2">
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-granate hover:bg-granate hover:text-white js-edit-usuario-btn"
+                                                title="Editar"
+                                                data-id="<?= (int) $usuario['id'] ?>"
+                                                data-nombres="<?= htmlspecialchars($usuario['nombres'], ENT_QUOTES) ?>"
+                                                data-apellidos="<?= htmlspecialchars($usuario['apellidos'], ENT_QUOTES) ?>"
+                                                data-email="<?= htmlspecialchars($usuario['email'], ENT_QUOTES) ?>"
+                                                data-telefono="<?= htmlspecialchars($usuario['telefono'] ?? '', ENT_QUOTES) ?>"
+                                                data-rol="<?= htmlspecialchars($usuario['rol'] ?? '', ENT_QUOTES) ?>"
+                                                data-estado="<?= htmlspecialchars($usuario['estado'] ?? '', ENT_QUOTES) ?>">
+                                            ✎
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-red-400 hover:bg-red-500 hover:text-white"
+                                                title="Eliminar"
+                                                onclick="confirmDeleteUsuario(<?= (int) $usuario['id'] ?>)">
+                                            🗑
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-granate hover:bg-granate hover:text-white"
+                                                title="Ver detalle"
+                                                onclick="openDetailUsuarioModal('<?= htmlspecialchars($usuario['nombres'], ENT_QUOTES) ?>', '<?= htmlspecialchars($usuario['apellidos'], ENT_QUOTES) ?>', '<?= htmlspecialchars($usuario['email'], ENT_QUOTES) ?>', '<?= htmlspecialchars($usuario['telefono'] ?? '-', ENT_QUOTES) ?>', '<?= htmlspecialchars($usuario['rol'] ?? '', ENT_QUOTES) ?>', '<?= htmlspecialchars($usuario['estado'] ?? '', ENT_QUOTES) ?>')">
+                                            👁
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -107,6 +125,31 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
 <form id="deleteUsuarioForm" action="/usuarios/eliminar" method="post" hidden>
     <input type="hidden" name="id" id="deleteUsuarioId">
 </form>
+
+<div id="detailUsuarioModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
+    <div class="w-full max-w-xl rounded-[32px] bg-white p-6 shadow-2xl">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-2xl font-bold text-granate">Detalle de usuario</h3>
+                <p class="text-sm text-secundario">Revisa la información completa del usuario seleccionado.</p>
+            </div>
+            <button type="button" onclick="closeDetailUsuarioModal()" class="text-slate-500 hover:text-granate">Cerrar</button>
+        </div>
+
+        <div class="space-y-4 text-sm text-slate-700">
+            <div><span class="font-semibold text-slate-800">Nombres:</span> <span id="detailUsuarioNombres"></span></div>
+            <div><span class="font-semibold text-slate-800">Apellidos:</span> <span id="detailUsuarioApellidos"></span></div>
+            <div><span class="font-semibold text-slate-800">Correo:</span> <span id="detailUsuarioEmail"></span></div>
+            <div><span class="font-semibold text-slate-800">Teléfono:</span> <span id="detailUsuarioTelefono"></span></div>
+            <div><span class="font-semibold text-slate-800">Rol:</span> <span id="detailUsuarioRol"></span></div>
+            <div><span class="font-semibold text-slate-800">Estado:</span> <span id="detailUsuarioEstado"></span></div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button type="button" onclick="closeDetailUsuarioModal()" class="btn btn-primary px-5 py-3">Cerrar</button>
+        </div>
+    </div>
+</div>
 
 <div id="createUsuarioModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 p-4">
     <div class="w-full max-w-2xl rounded-[32px] bg-white p-6 shadow-2xl">
@@ -256,6 +299,32 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
         document.getElementById('editUsuarioModal').classList.add('hidden');
     }
 
+    function openDetailUsuarioModal(nombres, apellidos, email, telefono, rol, estado) {
+        document.getElementById('detailUsuarioNombres').textContent = nombres;
+        document.getElementById('detailUsuarioApellidos').textContent = apellidos;
+        document.getElementById('detailUsuarioEmail').textContent = email;
+        document.getElementById('detailUsuarioTelefono').textContent = telefono;
+        document.getElementById('detailUsuarioRol').textContent = rol;
+        document.getElementById('detailUsuarioEstado').textContent = estado;
+
+        document.getElementById('detailUsuarioModal').classList.remove('hidden');
+        document.getElementById('detailUsuarioModal').classList.add('flex');
+    }
+
+    function closeDetailUsuarioModal() {
+        document.getElementById('detailUsuarioModal').classList.add('hidden');
+    }
+
+    function filterUsuariosTable() {
+        const term = document.getElementById('searchUsuariosInput').value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach((row) => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
+    }
+
+    document.getElementById('searchUsuariosInput').addEventListener('input', filterUsuariosTable);
+
     document.querySelectorAll('.js-edit-usuario-btn').forEach((button) => {
         button.addEventListener('click', function () {
             openEditModal(
@@ -272,7 +341,7 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
 
     function confirmDeleteUsuario(id) {
         if (!window.appAlerts) {
-            if (confirm('!Deseas eliminar este usuario?')) {
+            if (confirm('¿Deseas eliminar este usuario?')) {
                 document.getElementById('deleteUsuarioId').value = id;
                 document.getElementById('deleteUsuarioForm').submit();
             }
@@ -281,7 +350,7 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
 
         window.appAlerts.confirm({
             title: 'Eliminar usuario',
-            text: '!Estas seguro de eliminar este usuario? Esta acción no se puede deshacer.',
+            text: '¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.',
             confirmButtonText: 'Sí, eliminar',
             cancelButtonText: 'Cancelar',
             confirmButtonColor: '#dc2626',
