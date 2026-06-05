@@ -89,10 +89,18 @@ class SessionController {
             'materia'       => $materia,
             'horario'       => $horario,
             'nombre_alumno' => $nombre_alumno,
+            'rol'           => $_SESSION['rol'] ?? 'alumno',
         ]);
     }
 
     public function guardarLink() {
+        $rol = $_SESSION['rol'] ?? 'alumno';
+        if ($rol !== 'tutor' && $rol !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'error' => 'Solo el tutor puede editar el enlace.']);
+            exit;
+        }
+
         $sesion_id = (int)  $_POST['sesion_id'];
         $link      = trim($_POST['link'] ?? '');
 

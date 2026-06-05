@@ -51,7 +51,7 @@ class LoginController
         }
 
         if ($user['estado'] !== estado_general::ACTIVO->value) {
-            $this->BackWithError('Este users esta inactivo.');
+            $this->BackWithError('Este users esta inactivo. Comunicate con el administrador del servicio.');
         }
 
         // iniciar sesion
@@ -73,8 +73,8 @@ class LoginController
     {
         $rutas = [
             rol_usuario::ADMIN->value => '/admin/dashboard',
-            rol_usuario::TUTOR->value => '/users/inicio',
-            rol_usuario::ALUMNO->value => '/users/inicio',
+            rol_usuario::TUTOR->value => '/tutorias',
+            rol_usuario::ALUMNO->value => '/tutorias',
         ];
 
         header('Location: ' . ($rutas[$rol] ?? '/'));

@@ -36,6 +36,13 @@ class EvaluationController {
 
     // POST /evaluation/guardar
     public function guardar() {
+        $rol = $_SESSION['rol'] ?? 'alumno';
+        if ($rol !== 'tutor' && $rol !== 'admin') {
+            http_response_code(403);
+            echo 'Solo el tutor puede crear evaluaciones.';
+            exit;
+        }
+
         $tutoria_id  = (int)   $_POST['tutoria_id'];
         $tutor_id    = (int)   ($_SESSION['usuario_id'] ?? 1); // cuando tengas sesión real
         $titulo      = trim($_POST['titulo']);
@@ -90,6 +97,13 @@ class EvaluationController {
 
     // POST /evaluation/importar-xml
     public function importarXML() {
+        $rol = $_SESSION['rol'] ?? 'alumno';
+        if ($rol !== 'tutor' && $rol !== 'admin') {
+            http_response_code(403);
+            echo 'Solo el tutor puede importar evaluaciones.';
+            exit;
+        }
+
         $tutoria_id  = (int)   $_POST['tutoria_id'];
         $tutor_id    = (int)   ($_SESSION['usuario_id'] ?? 1);
         $titulo      = trim($_POST['titulo']      ?? 'Evaluación XML');

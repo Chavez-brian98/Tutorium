@@ -2,8 +2,10 @@
 // Requiere que $rol y $users estén disponibles (desde sesión o pasados por el controlador)
 // $rol: 'admin', 'tutor', 'alumno'
 
-$rol     = $_SESSION['rol']   ?? 'alumno';
-$usuario = $_SESSION['users'] ?? ['nombres' => 'Usuario', 'apellidos' => '', 'email' => ''];
+$rol      = $_SESSION['rol']      ?? 'alumno';
+$nombres  = $_SESSION['nombres']  ?? 'Usuario';
+$apellidos = $_SESSION['apellidos'] ?? '';
+$email    = $_SESSION['email']    ?? '';
 
 $rutaActual = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -20,7 +22,7 @@ $menuAdmin = [
 ];
 
 $menuTutorAlumno = [
-        ['icono' => 'fas fa-chart-pie',      'label' => 'Dashboard',    'ruta' => '/dashboard'],
+//        ['icono' => 'fas fa-chart-pie',      'label' => 'Dashboard',    'ruta' => '/dashboard'],
         ['icono' => 'fas fa-graduation-cap', 'label' => 'Tutorías',     'ruta' => '/tutorias'],
         ['icono' => 'fas fa-clipboard-list', 'label' => 'Evaluaciones', 'ruta' => '/evaluaciones'],
 ];
@@ -75,10 +77,10 @@ $menu = $rol === 'admin' ? $menuAdmin : $menuTutorAlumno;
             </div>
             <div class="sidebar-label overflow-hidden">
                 <p class="text-white text-sm font-bold truncate leading-tight group-hover:text-amber-400 transition-colors duration-200">
-                    <?= htmlspecialchars($usuario['nombres'] . ' ' . $usuario['apellidos']) ?>
+                    <?= htmlspecialchars(trim($nombres . ' ' . $apellidos)) ?>
                 </p>
                 <p class="text-white/40 text-xs truncate mt-0.5">
-                    <?= htmlspecialchars($usuario['email']) ?>
+                    <?= htmlspecialchars($email) ?>
                 </p>
             </div>
         </a>

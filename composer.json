@@ -5,9 +5,9 @@
     "require": {
         "php": ">=8.2",
       "ext-pdo": "*",
-      "ext-json": "*"
+      "ext-json": "*",
+        "mpdf/mpdf": "^8.3"
     },
-    "require-dev": {},
     "autoload": {
         "psr-4": {
             "App\\": "src/",
@@ -15,8 +15,8 @@
             "App\\Model\\": "app/model/"
         },
         "files": [
+            "config/database.php",
             "helpers/url.php"
         ]
     }
 }
-

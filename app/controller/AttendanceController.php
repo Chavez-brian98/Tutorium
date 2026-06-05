@@ -15,9 +15,16 @@ class AttendanceController {
     }
 
     // POST /attendance/marcar
-   // POST /attendance/marcar
+    // POST /attendance/marcar
     public function marcar() {
         header('Content-Type: application/json');
+
+        $rol = $_SESSION['rol'] ?? 'alumno';
+        if ($rol !== 'tutor' && $rol !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'error' => 'Solo el tutor puede marcar asistencia.']);
+            exit;
+        }
 
         try {
             $tutoria_id = (int) ($_POST['tutoria_id'] ?? 0);

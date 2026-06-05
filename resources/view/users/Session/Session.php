@@ -1,7 +1,8 @@
 <?php
 include __DIR__ . '/../../layout/sidebar.php';
 // Variables que llegan desde SessionController::mostrar():
-// $sesion, $sesiones, $tutoria_id, $numero, $sesion_id, $alumno_id, $yaAsistencia, $asisPresente
+// $sesion, $sesiones, $tutoria_id, $numero, $sesion_id, $alumno_id, $yaAsistencia, $asisPresente, $rol
+$esTutor = $rol === 'tutor' || $rol === 'admin';
 ?>
 <div class="min-h-screen md:ml-64 p-6 md:p-8">
 
@@ -29,6 +30,7 @@ include __DIR__ . '/../../layout/sidebar.php';
         <div class="flex justify-between items-center mb-4">
             <div>
                 <p class="text-sm text-gray-500">Horario asignado: <?= htmlspecialchars($horario) ?></p>
+                <?php if ($esTutor): ?>
                 <button id="btn-asistencia" onclick="marcarAsistencia()"
                         class="text-sm border rounded-xl px-4 py-2 mt-2 cursor-pointer hover:bg-gray-100 flex items-center gap-2">
                     <span id="icono-asistencia">
@@ -42,7 +44,9 @@ include __DIR__ . '/../../layout/sidebar.php';
                         <?= $yaAsistencia ? 'Modificar asistencia' : 'Marcar asistencia' ?>
                     </span>
                 </button>
+                <?php endif; ?>
             </div>
+            <?php if ($esTutor): ?>
             <div class="flex items-center gap-3">
                 <span class="text-sm text-gray-400" id="toggle-label">Edición desactivada</span>
                 <button onclick="toggleEdicion()" id="toggle-btn"
@@ -56,6 +60,7 @@ include __DIR__ . '/../../layout/sidebar.php';
                     Crear evaluación
                 </button>
             </div>
+            <?php endif; ?>
         </div>
 
         <!-- Link de la sesión (SIEMPRE visible) -->
@@ -87,6 +92,7 @@ include __DIR__ . '/../../layout/sidebar.php';
             <?php endif; ?>
         </div>
 
+        <?php if ($esTutor): ?>
         <!-- Vista edición -->
         <div id="seccion-editable" class="hidden">
             <div class="border rounded-xl p-4 m-1 text-gray-400 text-sm">
@@ -98,6 +104,7 @@ include __DIR__ . '/../../layout/sidebar.php';
                 </button>
             </div>
         </div>
+        <?php endif; ?>
 
         <!-- Footer -->
         <div class="flex justify-between mt-4 text-sm text-gray-400">
@@ -108,6 +115,8 @@ include __DIR__ . '/../../layout/sidebar.php';
     </div>
 </div>
 </div>
+
+<?php if ($esTutor): ?>
 <!-- Modal crear evaluación -->
 <div id="modal-evaluacion"
      class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -175,6 +184,7 @@ include __DIR__ . '/../../layout/sidebar.php';
 </div>
 
 <input type="file" id="input-xml" accept=".xml" class="hidden" onchange="procesarXML(this)">
+<?php endif; ?>
 
 <!-- Scripts específicos de esta vista -->
 <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>

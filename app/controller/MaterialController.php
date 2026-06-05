@@ -14,6 +14,13 @@ class MaterialController {
     public function guardar() {
         header('Content-Type: application/json');
 
+        $rol = $_SESSION['rol'] ?? 'alumno';
+        if ($rol !== 'tutor' && $rol !== 'admin') {
+            http_response_code(403);
+            echo json_encode(['ok' => false, 'error' => 'Solo el tutor puede editar el contenido.']);
+            exit;
+        }
+
         $sesion_id = (int)   ($_POST['sesion_id'] ?? 0);
         $texto     = trim($_POST['texto']     ?? '');
 
