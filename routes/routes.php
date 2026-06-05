@@ -9,6 +9,7 @@ use App\Controller\AttendanceController;
 use App\Controller\EvaluationController;
 use App\Controller\MaterialController;
 use App\Controller\SessionController;
+use App\Controller\TutoriasController;
 use App\Controller\UsuariosController;
 
 // ==========================================
@@ -41,7 +42,7 @@ Router::get('/admin/dashboard', function () {
 });
 
 Router::get('/dashboard', function () {
-    return view('Dashboard/Dashboard', ['title' => 'Dashboard']);
+    return view('admin/dashboard', ['title' => 'Dashboard']);
 });
 
 Router::get('/tutorias', function () {
@@ -56,7 +57,8 @@ Router::get('/tutorias/{tutoria_id}/sesiones', function ($tutoria_id) {
 });
 
 Router::get('/tutorias/admin', function () {
-    return view('admin/TutorialsAdmin/Tutorials', ['title' => 'Tutorías - Admin']);
+    $controller = new TutoriasController();
+    return $controller->index();
 });
 
 Router::get('/materias', function () {
@@ -119,6 +121,21 @@ Router::post('/materias/actualizar', function () {
 
 Router::post('/materias/eliminar', function () {
     $controller = new \App\Controller\MateriasController();
+    return $controller->eliminar();
+});
+
+Router::post('/tutorias/guardar', function () {
+    $controller = new \App\Controller\TutoriasController();
+    return $controller->guardar();
+});
+
+Router::post('/tutorias/actualizar', function () {
+    $controller = new \App\Controller\TutoriasController();
+    return $controller->actualizar();
+});
+
+Router::post('/tutorias/eliminar', function () {
+    $controller = new \App\Controller\TutoriasController();
     return $controller->eliminar();
 });
 
