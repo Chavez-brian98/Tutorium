@@ -1,158 +1,191 @@
-<div class="min-h-screen">
+<div style="background-color: #f0ebe3;">
 
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <div class="p-2 md:ml-64 p-6 md:p-8">
+    <div class="md:ml-64 p-6 md:p-8">
 
         <!-- Encabezado -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-semibold text-gray-800">Historial de Evaluaciones</h1>
+        <div class="mb-8">
+            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-dorado">Panel de tutoría</p>
+            <h1 class="text-4xl font-bold text-granate mt-3">Historial de Evaluaciones</h1>
         </div>
 
         <!-- Filtros -->
-        <div class="bg-white rounded-2xl shadow-sm p-4 mb-4 flex flex-col sm:flex-row gap-3">
+        <div class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6 mb-6">
+            <div class="flex flex-col sm:flex-row gap-3">
 
-            <!-- Buscador -->
-            <div class="relative flex-1">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <i class="bi bi-search"></i>
-            </span>
-                <input type="text" id="buscador"
-                       placeholder="Buscar por título..."
-                       oninput="filtrarTabla()"
-                       class="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#9e2820] focus:ring-2 focus:ring-[#9e2820]/10 transition-all" />
+                <!-- Buscador -->
+                <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <i class="bi bi-search"></i>
+                </span>
+                    <input type="text" id="buscador"
+                           placeholder="Buscar por título..."
+                           oninput="filtrarTabla()"
+                           class="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-granate focus:ring-2 focus:ring-granate/10 transition-all" />
+                </div>
+
+                <!-- Filtro por materia -->
+                <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <i class="bi bi-book"></i>
+                </span>
+                    <select id="filtro-materia"
+                            onchange="filtrarTabla()"
+                            class="pl-9 pr-8 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-granate focus:ring-2 focus:ring-granate/10 transition-all appearance-none cursor-pointer">
+                        <option value="">Todas las materias</option>
+                        <?php foreach ($materias as $m): ?>
+                            <option value="<?= htmlspecialchars($m) ?>"><?= htmlspecialchars($m) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                    <i class="bi bi-chevron-down text-xs"></i>
+                </span>
+                </div>
+
             </div>
-
-            <!-- Filtro por materia -->
-            <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <i class="bi bi-book"></i>
-            </span>
-                <select id="filtro-materia"
-                        onchange="filtrarTabla()"
-                        class="pl-9 pr-8 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-[#9e2820] focus:ring-2 focus:ring-[#9e2820]/10 transition-all appearance-none cursor-pointer">
-                    <option value="">Todas las materias</option>
-                    <?php foreach ($materias as $m): ?>
-                        <option value="<?= htmlspecialchars($m) ?>"><?= htmlspecialchars($m) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                <i class="bi bi-chevron-down text-xs"></i>
-            </span>
-            </div>
-
         </div>
 
         <!-- Tabla -->
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <table class="w-full text-sm" id="tabla-evaluaciones">
-                <thead>
-                <tr class="border-b border-gray-100">
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Título</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Estudiante</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Asignatura</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Fecha</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Nota</th>
-                    <th class="text-center px-5 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Acciones</th>
-                </tr>
-                </thead>
-                <tbody id="tbody-evaluaciones">
-                <?php $evaluaciones = $evaluaciones ?? []; ?>
-
-                <?php foreach ($evaluaciones as $ev): ?>
-                    <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors fila-evaluacion"
-                        data-id="<?= $ev['id'] ?>"
-                        data-titulo="<?= strtolower($ev['titulo']) ?>"
-                        data-materia="<?= $ev['materia'] ?>">
-
-                        <td class="px-5 py-3.5 font-medium text-gray-700">
-                            <?= htmlspecialchars($ev['titulo']) ?>
-                        </td>
-                        <td class="px-5 py-3.5 text-gray-600">
-                            <?= htmlspecialchars($ev['estudiante']) ?>
-                        </td>
-                        <td class="px-5 py-3.5 text-gray-600">
-                            <?= htmlspecialchars($ev['materia']) ?>
-                        </td>
-                        <td class="px-5 py-3.5 text-gray-500">
-                            <?= date('d/m/Y', strtotime($ev['fecha'])) ?>
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <?php if ($ev['nota'] !== null): ?>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
-                                <?= $ev['nota'] >= 7 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
-                                <?= number_format($ev['nota'], 1) ?>
-                            </span>
-                            <?php else: ?>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-                                Pendiente
-                            </span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="px-5 py-3.5">
-                            <div class="flex items-center justify-center gap-2">
-
-                                <?php if ($rol === 'tutor' || $rol === 'admin'): ?>
-                                    <!-- Ver -->
-                                    <button title="Ver evaluación"
-                                            onclick="verDetalles(
-                                                '<?= addslashes($ev['titulo']) ?>',
-                                                '<?= addslashes($ev['estudiante']) ?>',
-                                                '<?= addslashes($ev['materia']) ?>',
-                                                '<?= $ev['fecha'] ?>',
-                                            <?= $ev['nota'] !== null ? $ev['nota'] : 'null' ?>,
-                                                '<?= addslashes($ev['creado'] ?? date('Y-m-d H:i:s')) ?>',
-                                                '<?= addslashes($ev['actualizado'] ?? date('Y-m-d H:i:s')) ?>',
-                                                '<?= addslashes($ev['descripcion'] ?? '') ?>'
-                                                )"
-                                            class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-500 hover:bg-blue-50 transition-colors">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-
-                                    <!-- Calificar -->
-                                    <button title="Calificar"
-                                            onclick="abrirModalCalificar(
-                                                '<?= addslashes($ev['titulo']) ?>',
-                                                '<?= addslashes($ev['estudiante']) ?>',
-                                                '<?= addslashes($ev['materia']) ?>',
-                                                '<?= $ev['fecha'] ?>',
-                                            <?= $ev['id'] ?>,
-                                            <?= $ev['nota'] !== null ? $ev['nota'] : 'null' ?>,
-                                                '<?= addslashes($ev['descripcion'] ?? '') ?>'
-                                                )"
-                                            class="w-8 h-8 flex items-center justify-center rounded-lg text-[#9e2820] hover:bg-[#9e2820]/10 transition-colors">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                <?php endif; ?>
-
-                                <!-- Descargar PDF -->
-                                <a href="/evaluacion/pdf/<?= $ev['id'] ?>"
-                                   title="Descargar PDF"
-                                   class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
-                                    <i class="bi bi-file-earmark-pdf"></i>
-                                </a>
-
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-
-                </tbody>
-            </table>
-
-            <!-- Sin resultados -->
-            <div id="sin-resultados" class="hidden text-center py-12 text-gray-400">
-                <i class="bi bi-search text-3xl mb-2 block"></i>
-                <p class="text-sm">No se encontraron evaluaciones.</p>
+        <section class="rounded-[36px] bg-white shadow-lg border border-slate-200 p-6">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-granate">Evaluaciones</h2>
+                    <p class="mt-2 text-secundario">Revisa las evaluaciones realizadas en las tutorías.</p>
+                </div>
+                <span class="inline-flex items-center rounded-full bg-granate/10 px-4 py-2 text-sm font-semibold text-granate">Total: <?= count($evaluaciones ?? []) ?></span>
             </div>
 
-        </div>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[800px] border-separate border-spacing-0 text-sm">
+                    <thead class="bg-granate text-white rounded-3xl">
+                        <tr>
+                            <th class="px-5 py-4 text-left">Título</th>
+                            <th class="px-5 py-4 text-left">Estudiante</th>
+                            <th class="px-5 py-4 text-left">Asignatura</th>
+                            <th class="px-5 py-4 text-left">Fecha</th>
+                            <th class="px-5 py-4 text-left">Nota</th>
+                            <th class="px-5 py-4 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-evaluaciones">
+                        <?php $evaluaciones = $evaluaciones ?? []; ?>
+
+                        <?php foreach ($evaluaciones as $ev): ?>
+                            <tr class="border-b border-slate-200 last:border-none hover:bg-slate-50 fila-evaluacion"
+                                data-id="<?= $ev['id'] ?>"
+                                data-titulo="<?= strtolower($ev['titulo']) ?>"
+                                data-materia="<?= $ev['materia'] ?>">
+
+                                <td class="px-5 py-4 text-slate-800 font-medium">
+                                    <?= htmlspecialchars($ev['titulo']) ?>
+                                </td>
+                                <td class="px-5 py-4 text-slate-600">
+                                    <?= htmlspecialchars($ev['estudiante']) ?>
+                                </td>
+                                <td class="px-5 py-4 text-slate-600">
+                                    <?= htmlspecialchars($ev['materia']) ?>
+                                </td>
+                                <td class="px-5 py-4 text-slate-500">
+                                    <?= date('d/m/Y', strtotime($ev['fecha'])) ?>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <?php if ($ev['nota'] !== null): ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
+                                        <?= $ev['nota'] >= 7 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+                                        <?= number_format($ev['nota'], 1) ?>
+                                    </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
+                                        Pendiente
+                                    </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center justify-center gap-2">
+
+                                        <?php if ($rol === 'tutor' || $rol === 'admin'): ?>
+                                            <button title="Ver evaluación"
+                                                    onclick="verDetalles(
+                                                        <?= $ev['id'] ?>,
+                                                        '<?= addslashes($ev['titulo']) ?>',
+                                                        '<?= addslashes($ev['estudiante']) ?>',
+                                                        '<?= addslashes($ev['materia']) ?>',
+                                                        '<?= $ev['fecha'] ?>',
+                                                    <?= $ev['nota'] !== null ? $ev['nota'] : 'null' ?>,
+                                                        '<?= addslashes($ev['creado'] ?? date('Y-m-d H:i:s')) ?>',
+                                                        '<?= addslashes($ev['actualizado'] ?? date('Y-m-d H:i:s')) ?>',
+                                                        '<?= addslashes($ev['descripcion'] ?? '') ?>',
+                                                        '<?= addslashes($ev['comentarios_calificacion'] ?? '') ?>',
+                                                    <?= $ev['alumno_id'] ?? 'null' ?>
+                                                        )"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-blue-500 hover:bg-blue-50 transition-colors">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+
+                                            <button title="Calificar"
+                                                    onclick="abrirModalCalificar(
+                                                        '<?= addslashes($ev['titulo']) ?>',
+                                                        '<?= addslashes($ev['estudiante']) ?>',
+                                                        '<?= addslashes($ev['materia']) ?>',
+                                                        '<?= $ev['fecha'] ?>',
+                                                    <?= $ev['id'] ?>,
+                                                    <?= $ev['nota'] !== null ? $ev['nota'] : 'null' ?>,
+                                                        '<?= addslashes($ev['comentarios_calificacion'] ?? '') ?>',
+                                                    <?= $ev['alumno_id'] ?? 'null' ?>
+                                                        )"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-[#9e2820] hover:bg-[#9e2820]/10 transition-colors">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <a href="/evaluation/editar/<?= $ev['id'] ?>"
+                                               title="Editar evaluación"
+                                               class="w-8 h-8 flex items-center justify-center rounded-lg text-amber-600 hover:bg-amber-50 transition-colors">
+                                                <i class="bi bi-gear"></i>
+                                            </a>
+                                            <button title="Eliminar evaluación"
+                                                    onclick="eliminarEvaluacion(<?= $ev['id'] ?>, '<?= addslashes($ev['titulo']) ?>')"
+                                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-colors">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        <?php endif; ?>
+
+                                        <?php if ($rol === 'alumno'): ?>
+                                        <a href="/evaluacion/responder/<?= $ev['id'] ?>"
+                                           title="Realizar evaluación"
+                                           class="w-8 h-8 flex items-center justify-center rounded-lg text-[#9e2820] hover:bg-[#9e2820]/10 transition-colors">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <?php endif; ?>
+                                        <a href="/evaluacion/pdf/<?= $ev['id'] ?>"
+                                           title="Descargar PDF"
+                                           class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+
+                        <?php if (empty($evaluaciones)): ?>
+                            <tr>
+                                <td colspan="6" class="px-5 py-6 text-center text-secundario">No hay evaluaciones registradas todavía.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sin resultados (para filtros) -->
+            <div id="sin-resultados" class="hidden text-center py-12 text-secundario">
+                <i class="bi bi-search text-3xl mb-2 block"></i>
+                <p class="text-sm">No se encontraron evaluaciones con los filtros aplicados.</p>
+            </div>
+        </section>
 
         <!-- Modal Ver Detalles -->
         <div id="modal-ver" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4" onclick="cerrarModal(event)">
             <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onclick="event.stopPropagation()">
-
-                <!-- Header -->
                 <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -164,17 +197,12 @@
                         <i class="bi bi-x-lg text-gray-400 text-sm"></i>
                     </button>
                 </div>
-
-                <!-- Contenido -->
                 <div class="p-6">
                     <div class="space-y-5">
-                        <!-- Título -->
                         <div class="border-b border-gray-100 pb-3">
                             <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Título</label>
                             <p class="text-gray-800 font-medium mt-1" id="modal-titulo">-</p>
                         </div>
-
-                        <!-- Estudiante y Materia -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-gray-100 pb-3">
                             <div>
                                 <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Estudiante</label>
@@ -185,8 +213,6 @@
                                 <p class="text-gray-800 mt-1" id="modal-materia">-</p>
                             </div>
                         </div>
-
-                        <!-- Fecha y Nota -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-gray-100 pb-3">
                             <div>
                                 <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Fecha de Evaluación</label>
@@ -197,14 +223,14 @@
                                 <div id="modal-nota" class="mt-1"></div>
                             </div>
                         </div>
-
-                        <!-- Descripción -->
                         <div class="border-b border-gray-100 pb-3">
-                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Descripción / Comentarios</label>
+                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Descripción</label>
                             <p class="text-gray-600 mt-1 text-sm leading-relaxed" id="modal-descripcion">Sin descripción adicional.</p>
                         </div>
-
-                        <!-- Metadatos -->
+                        <div id="section-comentarios-calif" class="border-b border-gray-100 pb-3 hidden">
+                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Comentarios de calificación</label>
+                            <p class="text-gray-600 mt-1 text-sm leading-relaxed" id="modal-comentarios-calif"></p>
+                        </div>
                         <div class="bg-gray-50 rounded-xl p-4">
                             <div class="grid grid-cols-2 gap-3 text-xs">
                                 <div>
@@ -219,8 +245,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Footer -->
                 <div class="sticky bottom-0 bg-gray-50 rounded-b-2xl px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
                     <button onclick="cerrarModal(event)" class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                         Cerrar
@@ -237,8 +261,6 @@
         <!-- Modal Calificar Evaluación -->
         <div id="modal-calificar" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4" onclick="cerrarModalCalificar(event)">
             <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl" onclick="event.stopPropagation()">
-
-                <!-- Header -->
                 <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-[#9e2820]/10 flex items-center justify-center">
@@ -250,12 +272,8 @@
                         <i class="bi bi-x-lg text-gray-400 text-sm"></i>
                     </button>
                 </div>
-
-                <!-- Formulario -->
                 <form id="form-calificar" onsubmit="return guardarCalificacion(event)">
                     <div class="p-6 space-y-5">
-
-                        <!-- Información fija -->
                         <div class="bg-gray-50 rounded-xl p-4 space-y-3">
                             <div class="flex items-center gap-2 text-sm">
                                 <i class="bi bi-file-text text-gray-400"></i>
@@ -278,8 +296,9 @@
                                 <span class="font-medium text-gray-700" id="calif-fecha">-</span>
                             </div>
                         </div>
-
-                        <!-- Nota -->
+                        <div id="respuestas-alumno-container" class="space-y-2">
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Respuestas del estudiante</label>
+                        </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-gray-700">
                                 Calificación <span class="text-red-500">*</span>
@@ -300,8 +319,6 @@
                             </div>
                             <p class="text-xs text-gray-400">Valor entre 0 y 10 (puede usar decimales como 7.5)</p>
                         </div>
-
-                        <!-- Comentarios -->
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-gray-700">
                                 Comentarios / Retroalimentación
@@ -318,8 +335,6 @@
                                           class="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl outline-none focus:border-[#9e2820] focus:ring-2 focus:ring-[#9e2820]/10 transition-all resize-none"></textarea>
                             </div>
                         </div>
-
-                        <!-- Barra de progreso -->
                         <div class="space-y-2">
                             <div class="flex justify-between text-xs text-gray-500 mb-1">
                                 <span>Insuficiente</span>
@@ -331,8 +346,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Footer -->
                     <div class="sticky bottom-0 bg-gray-50 rounded-b-2xl px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
                         <button type="button" onclick="cerrarModalCalificar(event)" class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                             Cancelar
@@ -352,35 +365,20 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-
         .animate-spin {
             animation: spin 1s linear infinite;
         }
-
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-
         @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
-
         .animate-slide-in {
             animation: slideIn 0.3s ease-out;
         }
-
         .animate-fade-out {
             animation: fadeOut 0.3s ease-out forwards;
         }
@@ -390,27 +388,17 @@
         let currentCalificacionData = null;
         let currentEvaluationData = null;
 
-        function abrirModalCalificar(titulo, estudiante, materia, fecha, evaluacionId, notaActual = null, comentariosActuales = null) {
+        function abrirModalCalificar(titulo, estudiante, materia, fecha, evaluacionId, notaActual = null, comentariosActuales = null, alumnoId = null) {
             currentCalificacionData = {
-                id: evaluacionId,
-                titulo: titulo,
-                estudiante: estudiante,
-                materia: materia,
-                fecha: fecha,
-                notaActual: notaActual,
-                comentariosActuales: comentariosActuales
+                id: evaluacionId, titulo, estudiante, materia, fecha, notaActual, comentariosActuales, alumnoId
             };
-
             document.getElementById('calif-titulo').textContent = titulo;
             document.getElementById('calif-estudiante').textContent = estudiante;
             document.getElementById('calif-materia').textContent = materia;
-
             const fechaObj = new Date(fecha);
-            const fechaFormateada = fechaObj.toLocaleDateString('es-ES', {
+            document.getElementById('calif-fecha').textContent = fechaObj.toLocaleDateString('es-ES', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
-            document.getElementById('calif-fecha').textContent = fechaFormateada;
-
             const notaInput = document.getElementById('calif-nota');
             if (notaActual !== null && notaActual !== undefined) {
                 notaInput.value = notaActual;
@@ -419,14 +407,60 @@
                 notaInput.value = '';
                 actualizarBarraProgreso(0);
             }
-
-            const comentariosTextarea = document.getElementById('calif-comentarios');
-            comentariosTextarea.value = comentariosActuales || '';
-
+            document.getElementById('calif-comentarios').value = comentariosActuales || '';
             const modal = document.getElementById('modal-calificar');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
+
+            // Cargar respuestas del alumno si tenemos alumno_id
+            cargarRespuestasAlumno(evaluacionId, alumnoId);
+        }
+
+        async function cargarRespuestasAlumno(evaluacionId, alumnoId) {
+            const container = document.getElementById('respuestas-alumno-container');
+            if (!container || !alumnoId) {
+                if (container) container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = '<p class="text-sm text-gray-400">Cargando respuestas...</p>';
+            try {
+                const res = await fetch(`/api/evaluacion/respuestas/${evaluacionId}/${alumnoId}`);
+                const data = await res.json();
+                if (!data.ok) {
+                    container.innerHTML = '<p class="text-sm text-red-500">Error al cargar respuestas.</p>';
+                    return;
+                }
+                if (!data.respuestas || data.respuestas.length === 0) {
+                    container.innerHTML = '<p class="text-sm text-amber-600">Este estudiante aún no ha respondido esta evaluación.</p>';
+                    return;
+                }
+                let html = '<div class="space-y-3 mt-3">';
+                data.respuestas.forEach((r, i) => {
+                    const correcta = r.es_correcta == 1;
+                    const icono = correcta ? '<i class="bi bi-check-circle-fill text-green-600"></i>' : '<i class="bi bi-x-circle-fill text-red-500"></i>';
+                    let respuestaAlumno = r.respuesta_alumno_texto || r.respuesta_texto || '(sin responder)';
+                    if (r.tipo === 'VyF' && !r.respuesta_alumno_texto && r.respuesta_texto) {
+                        respuestaAlumno = r.respuesta_texto;
+                    }
+                    html += `
+                        <div class="border ${correcta ? 'border-green-200' : 'border-red-200'} rounded-lg p-3 bg-gray-50">
+                            <p class="text-sm font-medium text-gray-700">${i+1}. ${r.enunciado}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                ${icono}
+                                <span class="text-sm ${correcta ? 'text-green-700' : 'text-red-700'}">
+                                    Respuesta: ${respuestaAlumno || '(vacío)'}
+                                </span>
+                            </div>
+                            ${r.tipo !== 'respuesta_corta' ? `<p class="text-xs text-gray-500 mt-1">Correcta: ${r.respuesta_correcta_texto || '-'}</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p class="text-sm text-red-500">Error de conexión.</p>';
+            }
         }
 
         function cerrarModalCalificar(event) {
@@ -444,19 +478,15 @@
             if (progressBar) progressBar.style.width = `${porcentaje}%`;
         }
 
-        function verDetalles(titulo, estudiante, materia, fecha, nota, creado = null, actualizado = null, descripcion = null) {
-            currentEvaluationData = { titulo, estudiante, materia, fecha, nota, creado, actualizado, descripcion };
-
+        function verDetalles(id, titulo, estudiante, materia, fecha, nota, creado = null, actualizado = null, descripcion = null, comentariosCalif = null, alumnoId = null) {
+            currentEvaluationData = { id, titulo, estudiante, materia, fecha, nota, creado, actualizado, descripcion, comentariosCalif, alumnoId };
             document.getElementById('modal-titulo').textContent = titulo;
             document.getElementById('modal-estudiante').textContent = estudiante;
             document.getElementById('modal-materia').textContent = materia;
-
             const fechaObj = new Date(fecha);
-            const fechaFormateada = fechaObj.toLocaleDateString('es-ES', {
+            document.getElementById('modal-fecha').textContent = fechaObj.toLocaleDateString('es-ES', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
-            document.getElementById('modal-fecha').textContent = fechaFormateada;
-
             const notaContainer = document.getElementById('modal-nota');
             if (nota !== null && nota !== undefined && nota !== '') {
                 const notaNum = parseFloat(nota);
@@ -465,11 +495,17 @@
             } else {
                 notaContainer.innerHTML = `<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-700"><i class="bi bi-clock-history mr-1 text-xs"></i>Pendiente de calificar</span>`;
             }
-
             document.getElementById('modal-descripcion').textContent = descripcion || 'Sin descripción adicional.';
+            const comentariosEl = document.getElementById('modal-comentarios-calif');
+            const comentariosSection = document.getElementById('section-comentarios-calif');
+            if (comentariosCalif && comentariosCalif.trim()) {
+                comentariosEl.textContent = comentariosCalif;
+                comentariosSection.classList.remove('hidden');
+            } else {
+                comentariosSection.classList.add('hidden');
+            }
             document.getElementById('modal-creado').textContent = creado || 'No disponible';
             document.getElementById('modal-actualizado').textContent = actualizado || 'No disponible';
-
             const modal = document.getElementById('modal-ver');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -485,33 +521,23 @@
 
         async function guardarCalificacion(event) {
             event.preventDefault();
-
             const nota = parseFloat(document.getElementById('calif-nota').value);
             const comentarios = document.getElementById('calif-comentarios').value;
-
             if (isNaN(nota) || nota < 0 || nota > 10) {
                 mostrarAlerta('La calificación debe ser un número entre 0 y 10', 'error');
                 return false;
             }
-
             const btnSubmit = event.submitter;
             const textoOriginal = btnSubmit.innerHTML;
             btnSubmit.innerHTML = '<i class="bi bi-hourglass-split animate-spin"></i> Guardando...';
             btnSubmit.disabled = true;
-
             try {
                 const response = await fetch('/api/calificar-evaluacion', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: currentCalificacionData.id,
-                        nota: nota,
-                        comentarios: comentarios
-                    })
+                    body: JSON.stringify({ id: currentCalificacionData.id, nota, comentarios })
                 });
-
                 const result = await response.json();
-
                 if (result.success) {
                     mostrarAlerta('Calificación guardada exitosamente', 'success');
                     cerrarModalCalificar();
@@ -527,7 +553,6 @@
                 btnSubmit.innerHTML = textoOriginal;
                 btnSubmit.disabled = false;
             }
-
             return false;
         }
 
@@ -549,15 +574,40 @@
                 tipo === 'success' ? 'bg-green-500 text-white' :
                     tipo === 'error' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
             }`;
-
             const icono = tipo === 'success' ? 'bi-check-circle' : tipo === 'error' ? 'bi-x-circle' : 'bi-info-circle';
             alerta.innerHTML = `<i class="bi ${icono} text-xl"></i><span class="text-sm">${mensaje}</span>`;
             document.body.appendChild(alerta);
-
             setTimeout(() => {
                 alerta.classList.add('animate-fade-out');
                 setTimeout(() => alerta.remove(), 300);
             }, 3000);
+        }
+
+        async function eliminarEvaluacion(id, titulo) {
+            const result = await Swal.fire({
+                title: '¿Eliminar evaluación?',
+                html: `Se eliminará <b>${titulo}</b> y todas sus respuestas.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+            });
+            if (!result.isConfirmed) return;
+
+            try {
+                const res = await fetch(`/evaluation/eliminar/${id}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.ok) {
+                    mostrarAlerta('Evaluación eliminada', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    mostrarAlerta(data.error || 'Error al eliminar', 'error');
+                }
+            } catch (e) {
+                mostrarAlerta('Error de conexión', 'error');
+            }
         }
 
         function filtrarTabla() {
@@ -565,13 +615,11 @@
             const materia = document.getElementById('filtro-materia').value;
             const filas = document.querySelectorAll('.fila-evaluacion');
             let visibles = 0;
-
             filas.forEach(fila => {
                 const titulo = fila.dataset.titulo;
                 const materiaFila = fila.dataset.materia;
                 const coincideTitulo = titulo.includes(busqueda);
                 const coincideMateria = materia === '' || materiaFila === materia;
-
                 if (coincideTitulo && coincideMateria) {
                     fila.classList.remove('hidden');
                     visibles++;
@@ -579,7 +627,6 @@
                     fila.classList.add('hidden');
                 }
             });
-
             document.getElementById('sin-resultados').classList.toggle('hidden', visibles > 0);
         }
 
@@ -594,23 +641,23 @@
                     actualizarBarraProgreso(valor);
                 });
             }
-
             const btnCalificar = document.getElementById('btn-calificar-from-modal');
             if (btnCalificar) {
                 btnCalificar.addEventListener('click', function() {
                     if (currentEvaluationData) {
                         cerrarModal();
                         abrirModalCalificar(
-                            currentEvaluationData.titulo,
-                            currentEvaluationData.estudiante,
-                            currentEvaluationData.materia,
-                            currentEvaluationData.fecha,
-                            currentEvaluationData.id || null,
-                            currentEvaluationData.nota,
-                            currentEvaluationData.descripcion
+                            currentEvaluationData.titulo, currentEvaluationData.estudiante,
+                            currentEvaluationData.materia, currentEvaluationData.fecha,
+                            currentEvaluationData.id, currentEvaluationData.nota,
+                            currentEvaluationData.comentariosCalif,
+                            currentEvaluationData.alumnoId
                         );
                     }
                 });
             }
+
+
         });
     </script>
+</div>

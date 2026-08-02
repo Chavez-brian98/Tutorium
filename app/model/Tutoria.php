@@ -64,7 +64,19 @@ class Tutoria {
                 "INSERT INTO tutorias (alumno_id, tutor_id, materia_id, fecha, hora_incio, hora_fin, num_sesiones, estado)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
             );
-            return $stmt->execute([$alumno_id, $tutor_id, $materia_id, $fecha, $hora_inicio, $hora_fin, $num_sesiones, $estado]);
+            $result = $stmt->execute([$alumno_id, $tutor_id, $materia_id, $fecha, $hora_inicio, $hora_fin, $num_sesiones, $estado]);
+
+            if ($result) {
+                $tutoria_id = $this->db->lastInsertId();
+                $stmtSesion = $this->db->prepare(
+                    "INSERT INTO sesiones_tutoria (tutoria_id, numero, fecha) VALUES (?, ?, ?)"
+                );
+                for ($i = 1; $i <= $num_sesiones; $i++) {
+                    $stmtSesion->execute([$tutoria_id, $i, $fecha]);
+                }
+            }
+
+            return $result;
         } catch (PDOException $e) {
             error_log('Error al crear tutoría: ' . $e->getMessage());
             return false;
@@ -78,7 +90,29 @@ class Tutoria {
                  SET alumno_id = ?, tutor_id = ?, materia_id = ?, fecha = ?, hora_incio = ?, hora_fin = ?, num_sesiones = ?, estado = ?
                  WHERE id = ?"
             );
-            return $stmt->execute([$alumno_id, $tutor_id, $materia_id, $fecha, $hora_inicio, $hora_fin, $num_sesiones, $estado, $id]);
+            $result = $stmt->execute([$alumno_id, $tutor_id, $materia_id, $fecha, $hora_inicio, $hora_fin, $num_sesiones, $estado, $id]);
+
+            if ($result) {
+                $stmtCount = $this->db->prepare("SELECT COUNT(*) FROM sesiones_tutoria WHERE tutoria_id = ?");
+                $stmtCount->execute([$id]);
+                $actuales = (int) $stmtCount->fetchColumn();
+
+                if ($num_sesiones > $actuales) {
+                    $stmtSesion = $this->db->prepare(
+                        "INSERT INTO sesiones_tutoria (tutoria_id, numero, fecha) VALUES (?, ?, ?)"
+                    );
+                    for ($i = $actuales + 1; $i <= $num_sesiones; $i++) {
+                        $stmtSesion->execute([$id, $i, $fecha]);
+                    }
+                } elseif ($num_sesiones < $actuales) {
+                    $stmtDelete = $this->db->prepare(
+                        "DELETE FROM sesiones_tutoria WHERE tutoria_id = ? AND numero > ?"
+                    );
+                    $stmtDelete->execute([$id, $num_sesiones]);
+                }
+            }
+
+            return $result;
         } catch (PDOException $e) {
             error_log('Error al actualizar tutoría: ' . $e->getMessage());
             return false;
@@ -87,6 +121,7 @@ class Tutoria {
 
     public function eliminar(int $id) {
         try {
+            $this->db->prepare("DELETE FROM sesiones_tutoria WHERE tutoria_id = ?")->execute([$id]);
             $stmt = $this->db->prepare("DELETE FROM tutorias WHERE id = ?");
             return $stmt->execute([$id]);
         } catch (PDOException $e) {

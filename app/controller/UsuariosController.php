@@ -30,11 +30,26 @@ class UsuariosController {
         $estado   = in_array($_POST['estado'] ?? 'ACTIVO', ['ACTIVO', 'INACTIVO']) ? $_POST['estado'] : 'ACTIVO';
 
         if ($nombres === '' || $apellidos === '' || $email === '' || $password === '') {
+            $_SESSION['flash_error'] = 'Todos los campos obligatorios deben ser llenados.';
             header('Location: /usuarios');
             exit;
         }
 
-        $this->usuarioModel->crear($nombres, $apellidos, $email, $password, $rol, $estado, $telefono !== '' ? $telefono : null);
+        $telefono = strlen($telefono) > 8 ? null : ($telefono !== '' ? $telefono : null);
+
+        try {
+            $resultado = $this->usuarioModel->crear($nombres, $apellidos, $email, $password, $rol, $estado, $telefono);
+        } catch (\Throwable $e) {
+            $_SESSION['flash_error'] = 'Error al crear usuario: ' . $e->getMessage();
+            header('Location: /usuarios');
+            exit;
+        }
+
+        if ($resultado) {
+            $_SESSION['flash_success'] = 'Usuario creado exitosamente.';
+        } else {
+            $_SESSION['flash_error'] = 'Error al crear el usuario. Revisa los logs del sistema.';
+        }
 
         header('Location: /usuarios');
         exit;
@@ -51,11 +66,14 @@ class UsuariosController {
         $estado   = in_array($_POST['estado'] ?? 'ACTIVO', ['ACTIVO', 'INACTIVO']) ? $_POST['estado'] : 'ACTIVO';
 
         if ($id <= 0 || $nombres === '' || $apellidos === '' || $email === '') {
+            $_SESSION['flash_error'] = 'Datos inválidos para actualizar el usuario.';
             header('Location: /usuarios');
             exit;
         }
 
-        $this->usuarioModel->actualizar(
+        $telefono = strlen($telefono) > 8 ? null : ($telefono !== '' ? $telefono : null);
+
+        $resultado = $this->usuarioModel->actualizar(
             $id,
             $nombres,
             $apellidos,
@@ -63,8 +81,14 @@ class UsuariosController {
             $rol,
             $estado,
             $password !== '' ? $password : null,
-            $telefono !== '' ? $telefono : null
+            $telefono
         );
+
+        if ($resultado) {
+            $_SESSION['flash_success'] = 'Usuario actualizado correctamente.';
+        } else {
+            $_SESSION['flash_error'] = 'Error al actualizar el usuario.';
+        }
 
         header('Location: /usuarios');
         exit;
@@ -74,7 +98,12 @@ class UsuariosController {
         $id = (int) ($_POST['id'] ?? 0);
 
         if ($id > 0) {
-            $this->usuarioModel->eliminar($id);
+            $resultado = $this->usuarioModel->eliminar($id);
+            if ($resultado) {
+                $_SESSION['flash_success'] = 'Usuario eliminado correctamente.';
+            } else {
+                $_SESSION['flash_error'] = 'Error al eliminar el usuario.';
+            }
         }
 
         header('Location: /usuarios');

@@ -1,10 +1,13 @@
 <?php
-include __DIR__ . '/../../layout/sidebar.php';
 // Variables que llegan desde SessionController::mostrar():
-// $sesion, $sesiones, $tutoria_id, $numero, $sesion_id, $alumno_id, $yaAsistencia, $asisPresente, $rol
+// $sesion, $sesiones, $tutoria_id, $numero, $sesion_id, $alumno_id, $yaAsistencia, $asisPresente, $rol, $evaluacion, $materia, $horario, $nombre_alumno, $material
 $esTutor = $rol === 'tutor' || $rol === 'admin';
 ?>
-<div class="min-h-screen md:ml-64 p-6 md:p-8">
+<div class="flex min-h-screen">
+
+<?php include __DIR__ . '/../../layout/sidebar.php'; ?>
+
+<div class="flex-1 p-6 md:p-8">
 
 <h1 class="text-xl font-semibold mb-4">Asignatura: <?= htmlspecialchars($materia) ?></h1>
 
@@ -46,8 +49,33 @@ $esTutor = $rol === 'tutor' || $rol === 'admin';
                 </button>
                 <?php endif; ?>
             </div>
-            <?php if ($esTutor): ?>
             <div class="flex items-center gap-3">
+                <?php if (!empty($evaluacion)): ?>
+                <?php if ($rol === 'alumno'): ?>
+                <?php if ($yaRespondida): ?>
+                <span class="px-4 py-2 text-sm font-medium bg-gray-300 text-gray-500 rounded-xl flex items-center gap-2 shadow-sm cursor-not-allowed">
+                    <i class="bi bi-check-lg text-sm"></i> Evaluación respondida
+                </span>
+                <?php else: ?>
+                <a href="/evaluacion/responder/<?= $evaluacion['id'] ?>"
+                   class="px-4 py-2 text-sm font-medium bg-[#9e2820] text-white rounded-xl hover:bg-[#7a2019] transition-colors flex items-center gap-2 shadow-sm">
+                    <i class="bi bi-pencil-square text-sm"></i> Contestar evaluación
+                </a>
+                <?php endif; ?>
+                <?php else: ?>
+                <a href="/evaluacion/responder/<?= $evaluacion['id'] ?>"
+                   class="border rounded-xl px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2">
+                    <i class="bi bi-eye"></i> Ver evaluación
+                </a>
+                <?php endif; ?>
+                <?php if ($rol === 'tutor' || $rol === 'admin'): ?>
+                <a href="/evaluation/editar/<?= $evaluacion['id'] ?>"
+                   class="border rounded-xl px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2 text-amber-700">
+                    <i class="bi bi-gear"></i> Editar
+                </a>
+                <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($esTutor): ?>
                 <span class="text-sm text-gray-400" id="toggle-label">Edición desactivada</span>
                 <button onclick="toggleEdicion()" id="toggle-btn"
                         class="relative w-11 h-6 rounded-full bg-gray-200 transition-colors duration-300 focus:outline-none">
@@ -55,12 +83,14 @@ $esTutor = $rol === 'tutor' || $rol === 'admin';
                           class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300">
                     </span>
                 </button>
+                <?php if (empty($evaluacion)): ?>
                 <button onclick="abrirModalEvaluacion()"
                         class="border rounded-xl px-4 py-2 text-sm hover:bg-gray-100">
                     Crear evaluación
                 </button>
+                <?php endif; ?>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
         </div>
 
         <!-- Link de la sesión (SIEMPRE visible) -->
@@ -81,6 +111,40 @@ $esTutor = $rol === 'tutor' || $rol === 'admin';
                        placeholder="https://..."
                        class="w-full pl-10 pr-4 py-2.5 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg outline-none transition-all duration-200 placeholder:text-gray-300 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed" />
             </div>
+        </div>
+
+        <!-- PDF de la sesión (SIEMPRE visible) -->
+        <div class="border border-gray-200 flex-1 rounded-xl p-5 m-1 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">
+                Material PDF
+            </label>
+            <?php if (!empty($material['archivo']) && !empty($material['ruta'])): ?>
+            <div class="flex items-center gap-3">
+                <i class="bi bi-filetype-pdf text-red-500 text-xl"></i>
+                <a href="/material/pdf/<?= $sesion_id ?>"
+                   target="_blank"
+                   class="text-sm text-blue-600 underline hover:text-blue-800">
+                    <?= htmlspecialchars($material['archivo']) ?>
+                </a>
+                <?php if ($esTutor): ?>
+                <button onclick="eliminarPDF()"
+                        class="text-sm text-red-600 hover:text-red-800 ml-2"
+                        title="Eliminar PDF">
+                    <i class="bi bi-trash"></i>
+                </button>
+                <?php endif; ?>
+            </div>
+            <?php else: ?>
+            <p class="text-sm text-gray-400">No hay PDF subido para esta sesión.</p>
+            <?php endif; ?>
+            <?php if ($esTutor): ?>
+            <div class="mt-3">
+                <label for="input-pdf" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#9e2820] rounded-xl hover:bg-[#7a2019] transition-colors cursor-pointer">
+                    <i class="bi bi-upload"></i> <?= !empty($material['archivo']) ? 'Reemplazar PDF' : 'Subir PDF' ?>
+                </label>
+                <input type="file" id="input-pdf" accept=".pdf" class="hidden" onchange="subirPDF(this)">
+            </div>
+            <?php endif; ?>
         </div>
 
         <!-- Vista lectura -->
@@ -113,6 +177,7 @@ $esTutor = $rol === 'tutor' || $rol === 'admin';
         </div>
 
     </div>
+</div>
 </div>
 </div>
 
@@ -196,6 +261,7 @@ $esTutor = $rol === 'tutor' || $rol === 'admin';
         alumnoId:       <?= $alumno_id ?>,
         yaAsistencia:   <?= $yaAsistencia ? 'true' : 'false' ?>,
         asisPresente:   <?= $asisPresente === null ? 'null' : ($asisPresente ? 'true' : 'false') ?>,
+        yaRespondida:   <?= $yaRespondida ? 'true' : 'false' ?>,
     };
     const FLASH = "<?= $_GET['ok'] ?? '' ?>";
 </script>

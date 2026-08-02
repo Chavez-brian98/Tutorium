@@ -20,49 +20,37 @@ class Router
 
     private static $basePath = '';
 
-    /**
-     * Establecer la ruta base de la aplicación
-     */
+    /** Rutas que requieren roles específicos (sin basePath) */
+    private static $protected = [];
+
+    /** Rutas que no requieren autenticación (sin basePath) */
+    private static $publicPaths = ['/', '/login'];
+
     public static function setBasePath($path)
     {
         self::$basePath = rtrim($path, '/');
     }
 
-    /**
-     * Registrar ruta GET
-     */
     public static function get($path, $callback)
     {
         self::add('GET', $path, $callback);
     }
 
-    /**
-     * Registrar ruta POST
-     */
     public static function post($path, $callback)
     {
         self::add('POST', $path, $callback);
     }
 
-    /**
-     * Registrar ruta PUT
-     */
     public static function put($path, $callback)
     {
         self::add('PUT', $path, $callback);
     }
 
-    /**
-     * Registrar ruta DELETE
-     */
     public static function delete($path, $callback)
     {
         self::add('DELETE', $path, $callback);
     }
 
-    /**
-     * Registrar una ruta genérica
-     */
     public static function add($method, $path, $callback)
     {
         $path = self::$basePath . $path;
@@ -70,91 +58,118 @@ class Router
     }
 
     /**
-     * Ejecutar la ruta actual
+     * Marcar una ruta como protegida con roles específicos.
+     * $path se almacena sin basePath para comparar contra la URI normalizada.
      */
+    public static function protect($path, $roles = [])
+    {
+        self::$protected[$path] = $roles;
+    }
+
+    /**
+     * Marcar una ruta como pública (no requiere autenticación)
+     */
+    public static function setPublic($path)
+    {
+        self::$publicPaths[] = $path;
+    }
+
     public static function dispatch()
     {
-        // Manejar CLI
         if (php_sapi_name() === 'cli') {
             http_response_code(404);
             echo json_encode(['error' => 'Acceso CLI no permitido']);
             return;
         }
 
+        // Cabeceras anti-caché para evitar volver atrás tras cerrar sesión
+        header('Cache-Control: no-cache, no-store, must-revalidate, private');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-        // Remover ruta base si existe
+        // Remover ruta base
         if (self::$basePath && strpos($uri, self::$basePath) === 0) {
             $uri = substr($uri, strlen(self::$basePath));
         }
 
-        // Limpiar URI
         $uri = rtrim($uri, '/') ?: '/';
 
-        // Buscar ruta exacta
+        // Ruta exacta
         if (isset(self::$routes[$method][$uri])) {
+            self::checkAuth($uri);
             return self::executeCallback(self::$routes[$method][$uri]);
         }
 
-        // Buscar ruta con parámetros FOREACH PARA VER SI FUNCIONA CON OTRO
-       /* foreach (self::$routes[$method] as $path => $callback) {
-            $pattern = self::pathToRegex($path);
+        // Ruta con parámetros (la ruta almacenada incluye basePath)
+        foreach (self::$routes[$method] as $storedPath => $callback) {
+            $pattern = self::pathToRegex($storedPath);
             if (preg_match($pattern, $uri, $matches)) {
-                array_shift($matches); // Remover el match completo
-                return self::executeCallback($callback, $matches);
+                $limpios = array_filter($matches, fn($key) => is_int($key), ARRAY_FILTER_USE_KEY);
+                array_shift($limpios);
+                self::checkAuth($uri);
+                return self::executeCallback($callback, array_values($limpios));
             }
-        }*/
+        }
 
-        // ASÍ DEBE QUEDAR (CORREGIDO):
-        // DENTRO DE SRC/ROUTER.PHP -> METODO DISPATCH:
-foreach (self::$routes[$method] as $path => $callback) {
-    $pattern = self::pathToRegex($path);
-    
-    if (preg_match($pattern, $uri, $matches)) {
-        // 1. Filtrar el array para quedarnos ÚNICAMENTE con las llaves numéricas
-        $limpios = array_filter($matches, function($key) {
-            return is_int($key);
-        }, ARRAY_FILTER_USE_KEY);
-
-        // 2. CORRECCIÓN CRÍTICA:
-        // El primer elemento de $matches siempre es la URL completa (ej: '/tutorias/1/sesiones').
-        // Al usar array_values(), ese texto se quedaba en la posición 0.
-        // Con array_shift quitamos la URL completa antes de mandar los parámetros reales.
-        array_shift($limpios); 
-
-        // 3. Ejecutar el callback pasando solo los ID puros (ej: [1])
-        return self::executeCallback($callback, array_values($limpios));
-    }
-}
-
-        // Ruta no encontrada
         http_response_code(404);
         echo json_encode(['error' => 'Ruta no encontrada', 'uri' => $uri]);
         exit;
     }
 
     /**
-     * Convertir ruta con parámetros a regex
-     * Ej: /users/{id} => regex que capta {id}
+     * Verificar autenticación y roles para la URI actual
      */
-    private static function pathToRegex($path)
+    private static function checkAuth($uri)
     {
-        $path = preg_replace('/\{(\w+)\}/', '(?P<$1>\d+)', $path);
-        return '#^' . $path . '$#';
+        if (self::isPublic($uri)) {
+            return;
+        }
+        \App\Middleware\Auth::requireLogin();
+        $roles = self::matchProtection($uri);
+        if (!empty($roles)) {
+            \App\Middleware\Auth::requireRole(...$roles);
+        }
+    }
+
+    private static function isPublic($uri)
+    {
+        foreach (self::$publicPaths as $public) {
+            if (preg_match(self::pathToRegex($public), $uri)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Ejecutar el callback de una ruta
+     * Busca en las rutas protegidas si la URI coincide con algún patrón
      */
+    private static function matchProtection($uri)
+    {
+        foreach (self::$protected as $pattern => $roles) {
+            if (preg_match(self::pathToRegex($pattern), $uri)) {
+                return $roles;
+            }
+        }
+        return [];
+    }
+
+    private static function pathToRegex($path)
+    {
+        $path = preg_replace('/\{(\w+)\}/', '(?P<$1>\d+)', $path);
+        $path = str_replace('*', '.*', $path);
+        return '#^' . $path . '$#';
+    }
+
     private static function executeCallback($callback, $params = [])
     {
-        // Si es una función anónima o callable
         if (is_callable($callback)) {
             return call_user_func_array($callback, $params);
         }
 
-        // Si es string tipo "Controller@metodo"
         if (is_string($callback) && strpos($callback, '@') !== false) {
             list($controller, $method) = explode('@', $callback);
             $controllerClass = 'App\\Controller\\' . $controller;
@@ -175,17 +190,11 @@ foreach (self::$routes[$method] as $path => $callback) {
             return call_user_func_array([$instance, $method], $params);
         }
 
-        // Callback simple
         return $callback;
     }
 
-    /**
-     * Obtener todas las rutas registradas (útil para debugging)
-     */
     public static function getRoutes()
     {
         return self::$routes;
     }
 }
-
-

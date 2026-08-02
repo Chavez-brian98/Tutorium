@@ -330,6 +330,7 @@ function guardarConfigEvaluacion() {
 
   const params = new URLSearchParams({
     tutoria_id: SESSION_CONFIG.tutoriaId,
+    sesion_id: SESSION_CONFIG.sesionId,
     titulo: titulo,
     descripcion: descripcion,
     total: totalPreguntas,
@@ -340,7 +341,91 @@ function guardarConfigEvaluacion() {
   window.location.href = "/evaluation/crear?" + params.toString();
 }
 
-// Al final de Session.js, guarda el link cuando el users termina de escribir
+// ── Subir PDF ─────────────────────────────────────────────
+function subirPDF(input) {
+  const archivo = input.files[0];
+  if (!archivo) return;
+
+  if (archivo.type !== "application/pdf") {
+    Swal.fire("Error", "Solo se permiten archivos PDF.", "error");
+    input.value = "";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("sesion_id", SESSION_CONFIG.sesionId);
+  formData.append("archivo_pdf", archivo);
+
+  fetch("/material/subir-pdf", {
+    method: "POST",
+    body: formData,
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.ok) {
+        Swal.fire({
+          title: "PDF subido",
+          text: "El archivo se ha guardado correctamente.",
+          icon: "success",
+          confirmButtonColor: "#9e2820",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        // Recargar para mostrar el PDF
+        location.reload();
+      } else {
+        Swal.fire("Error", data.error ?? "No se pudo subir el PDF.", "error");
+      }
+    })
+    .catch(() =>
+      Swal.fire("Error", "No se pudo conectar con el servidor.", "error"),
+    );
+
+  input.value = "";
+}
+
+// ── Eliminar PDF ──────────────────────────────────────────
+function eliminarPDF() {
+  Swal.fire({
+    title: "Eliminar PDF",
+    text: "¿Estás seguro de eliminar este archivo?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#9e2820",
+    cancelButtonColor: "#6b7280",
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (!result.isConfirmed) return;
+
+    fetch("/material/eliminar-pdf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sesion_id: SESSION_CONFIG.sesionId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          Swal.fire({
+            title: "Eliminado",
+            text: "El PDF fue eliminado correctamente.",
+            icon: "success",
+            confirmButtonColor: "#9e2820",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          location.reload();
+        } else {
+          Swal.fire("Error", data.error ?? "No se pudo eliminar.", "error");
+        }
+      })
+      .catch(() =>
+        Swal.fire("Error", "No se pudo conectar con el servidor.", "error"),
+      );
+  });
+}
+
+// ── Guardar link ──────────────────────────────────────────
 document.getElementById("link-sesion").addEventListener("blur", function () {
   const link = this.value.trim();
 

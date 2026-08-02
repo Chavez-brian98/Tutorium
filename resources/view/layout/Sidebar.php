@@ -86,7 +86,7 @@ $menu = $rol === 'admin' ? $menuAdmin : $menuTutorAlumno;
             </div>
         </a>
 
-        <a href="/"
+        <a href="/logout"
            class="flex items-center gap-3 px-4 py-2.5 mt-2 rounded-xl text-white/50 hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 font-medium group hover:translate-x-1">
             <i class="fas fa-sign-out-alt text-base flex-shrink-0 w-5 text-center text-white/40 group-hover:text-red-400 transition-all duration-300 transform group-hover:-translate-x-1 group-hover:scale-110"></i>
             <span class="sidebar-label text-sm">Cerrar sesión</span>

@@ -24,22 +24,25 @@ $canceladas = count(array_filter($tutorias, fn($item) => strtoupper($item['estad
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Total de tutorías</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $totalTutorias ?></p>
-            <p class="mt-2 text-sm text-secundario">Tutorías registradas</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Total de tutorías</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $totalTutorias ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Tutorías registradas</p>
         </article>
 
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Pendientes</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $pendientes ?></p>
-            <p class="mt-2 text-sm text-secundario">Tutorías por iniciar</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Pendientes</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $pendientes ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Tutorías por iniciar</p>
         </article>
 
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Completadas</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $completadas ?></p>
-            <p class="mt-2 text-sm text-secundario">Tutorías finalizadas</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Completadas</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $completadas ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Tutorías finalizadas</p>
         </article>
     </div>
 

@@ -1,10 +1,14 @@
 <?php
-include __DIR__ . '/../../layout/sidebar.php';
 // Variables que llegan desde TutorialController::index():
-// $tutorias  — cada una con: id, fecha, hora_inicio, hora_fin, materia_nombre
+// $tutorias  — cada una con: id, fecha, hora_inicio, hora_fin, estado, materia_nombre
+$rol = $_SESSION['rol'] ?? 'alumno';
 ?>
 
-<div class="min-h-screen md:ml-64 p-6 md:p-8">
+<div class="flex min-h-screen">
+
+<?php include __DIR__ . '/../../layout/sidebar.php'; ?>
+
+<div class="flex-1 p-6 md:p-8">
     <div class="max-w-6xl mx-auto">
 
         <div class="flex items-center justify-between mb-8">
@@ -54,8 +58,8 @@ include __DIR__ . '/../../layout/sidebar.php';
                         : 'bg-white border-gray-200/80 hover:border-[#9e2820]/20';
                 ?>
 
-                    <a href="/tutorias/<?= $tutoria['id'] ?>/sesiones?numero=1"
-                       class="group block <?= $bgCard ?> border-2 rounded-2xl transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 cursor-pointer relative overflow-hidden">
+                    <div class="group block <?= $bgCard ?> border-2 rounded-2xl transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/5 cursor-pointer relative overflow-hidden"
+                         onclick="window.location='/tutorias/<?= $tutoria['id'] ?>/sesiones?numero=1'">
 
                         <div class="h-1.5 w-full bg-gradient-to-r from-[#9e2820] to-[#5c1313]"></div>
 
@@ -89,19 +93,32 @@ include __DIR__ . '/../../layout/sidebar.php';
                                 </div>
                             </div>
 
-                            <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between group-hover:border-[#9e2820]/10 transition-colors duration-200">
-                                <span class="text-sm font-semibold text-gray-400 group-hover:text-[#9e2820] transition-colors duration-200 flex items-center gap-2">
-                                    Ver sesiones
-                                    <i class="fas fa-arrow-right text-xs group-hover:translate-x-1.5 transition-transform duration-200"></i>
-                                </span>
-                                <span class="text-xs text-gray-300 group-hover:text-[#9e2820]/40 transition-colors duration-200">
-                                    <i class="fas fa-chevron-right"></i>
-                                </span>
+                            <div class="mt-5 pt-4 border-t border-gray-100 group-hover:border-[#9e2820]/10 transition-colors duration-200">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-gray-400 group-hover:text-[#9e2820] transition-colors duration-200 flex items-center gap-2">
+                                        Ver sesiones
+                                        <i class="fas fa-arrow-right text-xs group-hover:translate-x-1.5 transition-transform duration-200"></i>
+                                    </span>
+                                    <span class="text-xs text-gray-300 group-hover:text-[#9e2820]/40 transition-colors duration-200">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </div>
+                                <?php if ($rol === 'alumno' && ($tutoria['estado'] ?? '') === 'COMPLETADA'): ?>
+                                <div class="mt-2">
+                                    <a href="/certificado/pdf/<?= $tutoria['id'] ?>"
+                                       target="_blank"
+                                       class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1.5 hover:bg-emerald-100 transition-colors duration-200"
+                                       onclick="event.stopPropagation()">
+                                        <i class="fas fa-file-pdf text-emerald-500"></i>
+                                        Descargar certificado
+                                    </a>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
 
                         <div class="absolute -bottom-6 -right-6 w-24 h-24 rounded-full <?= $esPasada ? 'bg-gray-50' : 'bg-[#9e2820]/5' ?> opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100"></div>
-                    </a>
+                    </div>
 
                 <?php endforeach; ?>
 
@@ -118,4 +135,5 @@ include __DIR__ . '/../../layout/sidebar.php';
         <?php endif; ?>
 
     </div>
+</div>
 </div>

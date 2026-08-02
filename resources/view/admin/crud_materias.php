@@ -19,22 +19,25 @@ $materiasInactivas = $totalMaterias - $materiasActivas;
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Total de materias</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $totalMaterias ?></p>
-            <p class="mt-2 text-sm text-secundario">Materias registradas en el catálogo</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Total de materias</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $totalMaterias ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Materias registradas en el catálogo</p>
         </article>
 
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Activas</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $materiasActivas ?></p>
-            <p class="mt-2 text-sm text-secundario">Materias con estado ACTIVO</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Activas</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $materiasActivas ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Materias con estado ACTIVO</p>
         </article>
 
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Inactivas</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $materiasInactivas ?></p>
-            <p class="mt-2 text-sm text-secundario">Materias con estado INACTIVO</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Inactivas</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $materiasInactivas ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Materias con estado INACTIVO</p>
         </article>
     </div>
 

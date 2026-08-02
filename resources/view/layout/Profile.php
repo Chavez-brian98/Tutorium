@@ -1,6 +1,8 @@
+<div class="flex min-h-screen">
+
 <?php include __DIR__ . '/../layout/Sidebar.php'; ?>
 
-<div class="min-h-screen md:ml-64 p-6 md:p-8">
+<div class="flex-1 p-6 md:p-8">
     <div class="max-w-5xl mx-auto">
 
         <div class="mb-8">
@@ -161,4 +163,5 @@
 
         </div>
     </div>
+</div>
 </div>

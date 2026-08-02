@@ -12,6 +12,112 @@ use App\Controller\SessionController;
 use App\Controller\TutoriasController;
 use App\Controller\UsuariosController;
 
+function dashboardData() {
+    $db = \App\Database::getConnection();
+
+    $stats = [];
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias");
+    $stats['total_tutorias'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM sesiones_tutoria WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())");
+    $stmt->execute();
+    $stats['sesiones_este_mes'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias WHERE estado = 'PENDIENTE'");
+    $stats['tutorias_activas'] = (int) $stmt->fetchColumn();
+    $stats['tutorias_pendientes'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM materias WHERE estado = 'ACTIVO'");
+    $stats['materias_activas'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM materias");
+    $stats['total_materias'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM usuarios");
+    $stats['total_usuarios'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'tutor'");
+    $stats['total_tutores'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'alumno' AND estado = 'ACTIVO'");
+    $stats['total_alumnos'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias WHERE estado = 'COMPLETADA'");
+    $stats['tutorias_completadas'] = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias WHERE estado = 'CANCELADA'");
+    $stats['tutorias_canceladas'] = (int) $stmt->fetchColumn();
+
+    $usuario = [
+        'nombre' => trim(($_SESSION['nombres'] ?? '') . ' ' . ($_SESSION['apellidos'] ?? '')) ?: 'Administrador',
+    ];
+
+    $stmt = $db->prepare("
+        SELECT s.numero, s.fecha,
+               t.hora_incio AS hora_inicio,
+               CONCAT(u.nombres, ' ', u.apellidos) AS alumno_nombre,
+               m.nombre AS materia_nombre
+        FROM sesiones_tutoria s
+        JOIN tutorias t ON t.id = s.tutoria_id
+        JOIN usuarios u ON u.id = t.alumno_id
+        JOIN materias m ON m.id = t.materia_id
+        WHERE s.fecha >= CURDATE() AND t.estado = 'PENDIENTE'
+        ORDER BY s.fecha ASC, t.hora_incio ASC
+        LIMIT 5
+    ");
+    $stmt->execute();
+    $proximas_sesiones = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $stmt = $db->query("
+        SELECT CONCAT(u.nombres, ' ', u.apellidos) AS tutor_nombre,
+               u.id,
+               COUNT(t.id) AS total_completadas
+        FROM usuarios u
+        JOIN tutorias t ON t.tutor_id = u.id AND t.estado = 'COMPLETADA'
+        WHERE u.rol = 'tutor'
+        GROUP BY u.id
+        ORDER BY total_completadas DESC
+        LIMIT 5
+    ");
+    $top_tutores = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $stmt = $db->query("
+        SELECT m.nombre, m.codigo, COUNT(t.id) AS total_tutorias
+        FROM materias m
+        JOIN tutorias t ON t.materia_id = m.id
+        GROUP BY m.id
+        ORDER BY total_tutorias DESC
+        LIMIT 5
+    ");
+    $top_materias = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $stmt = $db->prepare("
+        SELECT MONTH(fecha) AS mes, COUNT(*) AS total
+        FROM tutorias
+        WHERE YEAR(fecha) = YEAR(CURDATE())
+        GROUP BY MONTH(fecha)
+        ORDER BY mes
+    ");
+    $stmt->execute();
+    $chart_data_rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $chart_values = array_fill(0, 12, 0);
+    foreach ($chart_data_rows as $row) {
+        $chart_values[(int)$row['mes'] - 1] = (int)$row['total'];
+    }
+
+    return view('admin/dashboard', [
+        'title'           => 'Dashboard',
+        'stats'           => $stats,
+        'usuario'         => $usuario,
+        'proximas_sesiones' => $proximas_sesiones,
+        'top_tutores'     => $top_tutores,
+        'top_materias'    => $top_materias,
+        'chart_values'    => $chart_values,
+    ]);
+}
+
 // ==========================================
 // RUTAS DE AUTENTICACIÓN (LOGIN)
 // ==========================================
@@ -26,6 +132,10 @@ Router::get('/login', function () {
 
 Router::post('/login', 'Auth\\LoginController@handle');
 
+Router::get('/logout', function () {
+    \App\Middleware\Auth::logout();
+});
+
 
 // ==========================================
 // VISTAS DEL DASHBOARD / SECCIONES
@@ -38,11 +148,11 @@ Router::get('/users/inicio', function () {
 
 // ADMINISTRADOR (Corregido: Ya no llama a layout/base manualmente)
 Router::get('/admin/dashboard', function () {
-    return view('admin/dashboard', ['title' => 'Dashboard']);
+    return dashboardData();
 });
 
 Router::get('/dashboard', function () {
-    return view('admin/dashboard', ['title' => 'Dashboard']);
+    return dashboardData();
 });
 
 Router::get('/tutorias', function () {
@@ -88,137 +198,42 @@ Router::get('/evaluaciones', function () {
     ]);
 });
 
-Router::get('/evaluacion/pdf/{id}', function ($evaluacion_id) {
-    $rol = $_SESSION['rol'] ?? 'alumno';
-    $usuario_id = $_SESSION['id'];
-    $db = \App\Database::getConnection();
-
-    // Obtener datos de la evaluación
-    $stmt = $db->prepare("
-        SELECT e.id, e.titulo, e.descripcion, e.fecha_creacion,
-               u.nombres, u.apellidos, m.nombre AS materia
-        FROM evaluaciones e
-        JOIN tutorias t ON t.id = e.tutoria_id
-        JOIN materias m ON m.id = t.materia_id
-        JOIN usuarios u ON u.id = e.creada_por
-        WHERE e.id = ?
-    ");
-    $stmt->execute([$evaluacion_id]);
-    $evaluacion = $stmt->fetch(PDO::FETCH_ASSOC);
-
+Router::get('/evaluacion/responder/{id}', function ($evaluacion_id) {
+    $model = new \App\Model\Evaluation();
+    $evaluacion = $model->obtenerConPreguntas($evaluacion_id);
     if (!$evaluacion) {
         http_response_code(404);
         echo 'Evaluación no encontrada.';
         exit;
     }
 
-    // Si es alumno, solo su propio historial (obtener el alumno_id de la tutoria)
-    $alumno_id = $usuario_id;
-    if ($rol === 'alumno') {
-        $stmt = $db->prepare("SELECT t.alumno_id FROM evaluaciones e JOIN tutorias t ON t.id = e.tutoria_id WHERE e.id = ?");
-        $stmt->execute([$evaluacion_id]);
-        $tutoria = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$tutoria || $tutoria['alumno_id'] != $usuario_id) {
-            http_response_code(403);
-            echo 'No tienes acceso a esta evaluación.';
-            exit;
-        }
-    }
+    $usuario_id = (int) ($_SESSION['id'] ?? 0);
+    $rol = $_SESSION['rol'] ?? 'alumno';
 
-    // Obtener detalle de preguntas y respuestas
-    $model = new \App\Model\Evaluation();
-    $detalle = $model->obtenerDetallePdf($evaluacion_id, $alumno_id);
+    $preguntasEvaluacion = $evaluacion['preguntas'];
 
-    // Generar PDF
-    $mpdf = new \Mpdf\Mpdf([
-        'margin_left'   => 15,
-        'margin_right'  => 15,
-        'margin_top'    => 20,
-        'margin_bottom' => 20,
+    $db = \App\Database::getConnection();
+    $stmtCheck = $db->prepare("SELECT COUNT(*) FROM respuestas_alumno WHERE evaluacion_id = ? AND alumno_id = ?");
+    $stmtCheck->execute([$evaluacion_id, $usuario_id]);
+    $yaRespondida = (int) $stmtCheck->fetchColumn() > 0;
+
+    return view('users/Evaluation/ResponderEvaluacion', [
+        'title' => $evaluacion['titulo'],
+        'evaluacion' => $evaluacion,
+        'preguntasEvaluacion' => $preguntasEvaluacion,
+        'yaRespondida' => $yaRespondida,
+        'rol' => $rol,
     ]);
+});
 
-    $html = '
-    <html>
-    <head>
-        <style>
-            body { font-family: sans-serif; font-size: 11pt; color: #333; }
-            h1 { color: #9e2820; font-size: 18pt; border-bottom: 2px solid #9e2820; padding-bottom: 5px; }
-            h2 { color: #555; font-size: 14pt; margin-top: 20px; }
-            .meta { background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0; font-size: 10pt; }
-            .meta strong { color: #555; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { background: #9e2820; color: #fff; padding: 8px 10px; text-align: left; font-size: 10pt; }
-            td { padding: 8px 10px; border-bottom: 1px solid #ddd; font-size: 10pt; }
-            .correcto { color: #15803d; font-weight: bold; }
-            .incorrecto { color: #dc2626; font-weight: bold; }
-            .footer { text-align: center; color: #999; font-size: 9pt; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px; }
-        </style>
-    </head>
-    <body>
-        <h1>' . htmlspecialchars($evaluacion['titulo']) . '</h1>
-        <div class="meta">
-            <strong>Materia:</strong> ' . htmlspecialchars($evaluacion['materia']) . '<br>
-            <strong>Fecha:</strong> ' . date('d/m/Y', strtotime($evaluacion['fecha_creacion'])) . '<br>
-            <strong>Tutor:</strong> ' . htmlspecialchars(trim($evaluacion['nombres'] . ' ' . $evaluacion['apellidos'])) . '
-        </div>';
+Router::get('/evaluacion/pdf/{id}', function ($evaluacion_id) {
+    $controller = new EvaluationController();
+    return $controller->generarPDF($evaluacion_id);
+});
 
-    if ($evaluacion['descripcion']) {
-        $html .= '<p style="font-style:italic;color:#666;">' . htmlspecialchars($evaluacion['descripcion']) . '</p>';
-    }
-
-    $html .= '<h2>Resultado por pregunta</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:40px;">#</th>
-                    <th>Pregunta</th>
-                    <th>Tu respuesta</th>
-                    <th>Respuesta correcta</th>
-                    <th style="width:60px;">Estado</th>
-                </tr>
-            </thead>
-            <tbody>';
-
-    $aciertos = 0;
-    $total = count($detalle);
-
-    foreach ($detalle as $i => $d) {
-        $num = $i + 1;
-        $estado = $d['es_correcta'] ? 'correcto' : 'incorrecto';
-        $icono = $d['es_correcta'] ? '✓' : '✗';
-        $clase = $d['es_correcta'] ? 'correcto' : 'incorrecto';
-        $respuesta = $d['respuesta_alumno'] ? htmlspecialchars($d['respuesta_alumno']) : '<em style="color:#999;">Sin responder</em>';
-        $correcta = htmlspecialchars($d['respuesta_correcta'] ?? '—');
-
-        $html .= '<tr>
-            <td>' . $num . '</td>
-            <td>' . htmlspecialchars($d['enunciado']) . '</td>
-            <td>' . $respuesta . '</td>
-            <td class="correcto">' . $correcta . '</td>
-            <td class="' . $clase . '">' . $icono . '</td>
-        </tr>';
-
-        if ($d['es_correcta']) $aciertos++;
-    }
-
-    $nota = $total > 0 ? round(($aciertos / $total) * 10, 1) : 0;
-
-    $html .= '</tbody></table>';
-
-    $html .= '<div style="text-align:right;font-size:12pt;margin-top:10px;">
-        <strong>Calificación:</strong> 
-        <span style="color:' . ($nota >= 7 ? '#15803d' : '#dc2626') . ';font-size:16pt;">' . number_format($nota, 1) . ' / 10</span>
-        <br><small style="color:#999;">' . $aciertos . ' de ' . $total . ' preguntas correctas</small>
-    </div>';
-
-    $html .= '<div class="footer">Generado el ' . date('d/m/Y H:i') . ' • Sistema de Tutorías</div>';
-
-    $html .= '</body></html>';
-
-    $mpdf->WriteHTML($html);
-    $filename = 'evaluacion_' . $evaluacion_id . '_' . preg_replace('/[^a-z0-9]/i', '_', $evaluacion['titulo']) . '.pdf';
-    $mpdf->Output($filename, 'D');
-    exit;
+Router::get('/certificado/pdf/{tutoria_id}', function ($tutoria_id) {
+    $controller = new EvaluationController();
+    return $controller->generarCertificado($tutoria_id);
 });
 
 Router::get('/perfil', function () {
@@ -244,9 +259,35 @@ Router::post('/evaluation/guardar', function () {
     return $controller->guardar();
 });
 
+Router::get('/evaluation/editar/{id}', function ($evaluacion_id) {
+    $controller = new EvaluationController();
+    return $controller->mostrarFormularioEditar($evaluacion_id);
+});
+
+Router::post('/evaluation/actualizar', function () {
+    $controller = new EvaluationController();
+    return $controller->actualizar();
+});
+
 Router::post('/evaluation/importar-xml', function () {
     $controller = new EvaluationController();
     return $controller->importarXML();
+});
+
+Router::post('/evaluation/eliminar/{id}', function ($evaluacion_id) {
+    $rol = $_SESSION['rol'] ?? 'alumno';
+    if ($rol !== 'tutor' && $rol !== 'admin') {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'No autorizado.']);
+        exit;
+    }
+
+    $model = new \App\Model\Evaluation();
+    $model->eliminar($evaluacion_id);
+
+    header('Content-Type: application/json');
+    echo json_encode(['ok' => true]);
+    exit;
 });
 
 Router::post('/attendance/marcar', function () {
@@ -257,6 +298,21 @@ Router::post('/attendance/marcar', function () {
 Router::post('/material/guardar', function () {
     $controller = new MaterialController();
     return $controller->guardar();
+});
+
+Router::get('/material/pdf/{sesion_id}', function ($sesion_id) {
+    $controller = new MaterialController();
+    return $controller->descargarPDF($sesion_id);
+});
+
+Router::post('/material/subir-pdf', function () {
+    $controller = new MaterialController();
+    return $controller->subirPDF();
+});
+
+Router::post('/material/eliminar-pdf', function () {
+    $controller = new MaterialController();
+    return $controller->eliminarPDF();
 });
 
 Router::post('/materias/guardar', function () {
@@ -309,6 +365,114 @@ Router::post('/session/guardarLink', function () {
     return $controller->guardarLink();
 });
 
+Router::post('/api/calificar-evaluacion', function () {
+    $rol = $_SESSION['rol'] ?? 'alumno';
+    if ($rol !== 'tutor' && $rol !== 'admin') {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'No autorizado.']);
+        exit;
+    }
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    $evaluacion_id = (int) ($input['id'] ?? 0);
+    $nota          = (float) ($input['nota'] ?? 0);
+    $comentarios   = trim($input['comentarios'] ?? '');
+
+    if (!$evaluacion_id || $nota < 0 || $nota > 10) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Datos inválidos.']);
+        exit;
+    }
+
+    $model = new \App\Model\Evaluation();
+    $result = $model->guardarCalificacion($evaluacion_id, $nota, $comentarios);
+
+    if (!$result) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'La base de datos no tiene las columnas de calificación. Ejecute la migración.']);
+        exit;
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode(['success' => true, 'nota' => $nota]);
+    exit;
+});
+
+Router::post('/api/evaluacion/responder', function () {
+    $rol = $_SESSION['rol'] ?? 'alumno';
+    if ($rol !== 'alumno' && $rol !== 'tutor' && $rol !== 'admin') {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'No autorizado.']);
+        exit;
+    }
+
+    $evaluacion_id = (int) ($_POST['evaluacion_id'] ?? 0);
+    $alumno_id     = (int) ($_SESSION['id'] ?? 0);
+    $respuestas    = json_decode($_POST['respuestas'] ?? '[]', true) ?? [];
+
+    if (!$evaluacion_id || !$alumno_id || empty($respuestas)) {
+        http_response_code(400);
+        echo json_encode(['ok' => false, 'error' => 'Datos incompletos.']);
+        exit;
+    }
+
+    $model = new \App\Model\Evaluation();
+    $model->guardarRespuestas($evaluacion_id, $alumno_id, $respuestas);
+
+    header('Content-Type: application/json');
+    echo json_encode(['ok' => true]);
+    exit;
+});
+
+Router::get('/api/evaluacion/respuestas/{evaluacion_id}/{alumno_id}', function ($evaluacion_id, $alumno_id) {
+    $rol = $_SESSION['rol'] ?? 'alumno';
+    if ($rol !== 'tutor' && $rol !== 'admin') {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'No autorizado.']);
+        exit;
+    }
+
+    $model = new \App\Model\Evaluation();
+    $respuestas = $model->obtenerRespuestasAlumno($evaluacion_id, $alumno_id);
+
+    header('Content-Type: application/json');
+    echo json_encode(['ok' => true, 'respuestas' => $respuestas]);
+    exit;
+});
+
+Router::get('/api/admin/stats', function () {
+    $db = \App\Database::getConnection();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias");
+    $total_tutorias = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias WHERE estado = 'PENDIENTE'");
+    $pendientes = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias WHERE estado = 'COMPLETADA'");
+    $completadas = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM tutorias WHERE estado = 'CANCELADA'");
+    $canceladas = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM usuarios");
+    $total_usuarios = (int) $stmt->fetchColumn();
+
+    $stmt = $db->query("SELECT COUNT(*) FROM materias WHERE estado = 'ACTIVO'");
+    $materias_activas = (int) $stmt->fetchColumn();
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'total_tutorias'     => $total_tutorias,
+        'pendientes'         => $pendientes,
+        'completadas'        => $completadas,
+        'canceladas'         => $canceladas,
+        'total_usuarios'     => $total_usuarios,
+        'materias_activas'   => $materias_activas,
+    ]);
+    exit;
+});
+
 Router::post('/perfil/actualizar', function () {
     $db = \App\Database::getConnection();
     $usuario_id = $_SESSION['id'];
@@ -349,6 +513,41 @@ Router::post('/perfil/actualizar', function () {
     header('Location: /perfil');
     exit;
 });
+
+
+// ==========================================
+// PROTECCIÓN DE RUTAS (MIDDLEWARE)
+// ==========================================
+
+// Públicas (no requieren autenticación)
+Router::setPublic('/');
+Router::setPublic('/login');
+Router::setPublic('/logout');
+
+// Admin (dashboard, materias, usuarios)
+Router::protect('/admin/*', ['admin']);
+Router::protect('/dashboard', ['admin']);
+Router::protect('/tutorias/admin', ['admin']);
+Router::protect('/materias*', ['admin']);
+Router::protect('/usuarios*', ['admin']);
+Router::protect('/api/admin/*', ['admin']);
+
+// Tutor/Admin (evaluaciones, materiales, asistencias)
+Router::protect('/attendance/*', ['tutor', 'admin']);
+Router::protect('/evaluation/crear', ['tutor', 'admin']);
+Router::protect('/evaluation/guardar', ['tutor', 'admin']);
+Router::protect('/evaluation/editar/*', ['tutor', 'admin']);
+Router::protect('/evaluation/actualizar', ['tutor', 'admin']);
+Router::protect('/evaluation/importar-xml', ['tutor', 'admin']);
+Router::protect('/evaluation/eliminar/*', ['tutor', 'admin']);
+Router::protect('/material/guardar', ['tutor', 'admin']);
+Router::protect('/material/subir-pdf', ['tutor', 'admin']);
+Router::protect('/material/eliminar-pdf', ['tutor', 'admin']);
+Router::protect('/session/guardarLink', ['tutor', 'admin']);
+Router::protect('/api/calificar-evaluacion', ['tutor', 'admin']);
+Router::protect('/api/evaluacion/respuestas/*', ['tutor', 'admin']);
+
+// El resto de rutas requieren autenticación (cualquier rol)
 
 
 // ==========================================

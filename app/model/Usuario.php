@@ -61,23 +61,18 @@ class Usuario {
         }
     }
 
-    public function crear(string $nombres, string $apellidos, string $email, string $password, string $rol = 'alumno', string $estado = 'ACTIVO', ?string $telefono = null) {
-        try {
-            $fields = ['nombres', 'apellidos', 'email', 'password', 'rol', 'estado'];
-            $values = [$nombres, $apellidos, $email, password_hash($password, PASSWORD_DEFAULT), $rol, $estado];
+    public function crear(string $nombres, string $apellidos, string $email, string $password, string $rol = 'alumno', string $estado = 'ACTIVO', ?string $telefono = null): bool {
+        $fields = ['nombres', 'apellidos', 'email', 'password', 'rol', 'estado'];
+        $values = [$nombres, $apellidos, $email, password_hash($password, PASSWORD_DEFAULT), $rol, $estado];
 
-            if ($telefono !== null && $this->campoExiste('telefono')) {
-                $fields[] = 'telefono';
-                $values[] = $telefono;
-            }
-
-            $placeholders = implode(', ', array_fill(0, count($fields), '?'));
-            $stmt = $this->db->prepare('INSERT INTO usuarios (' . implode(', ', $fields) . ') VALUES (' . $placeholders . ')');
-            return $stmt->execute($values);
-        } catch (PDOException $e) {
-            error_log('Error al crear usuario: ' . $e->getMessage());
-            return false;
+        if ($telefono !== null && $telefono !== '' && $this->campoExiste('telefono')) {
+            $fields[] = 'telefono';
+            $values[] = $telefono;
         }
+
+        $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+        $stmt = $this->db->prepare('INSERT INTO usuarios (' . implode(', ', $fields) . ') VALUES (' . $placeholders . ')');
+        return $stmt->execute($values);
     }
 
     public function actualizar(int $id, string $nombres, string $apellidos, string $email, string $rol = 'alumno', string $estado = 'ACTIVO', ?string $password = null, ?string $telefono = null) {

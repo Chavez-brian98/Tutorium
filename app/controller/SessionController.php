@@ -76,6 +76,27 @@ class SessionController {
         $materialModel = new \App\Model\Material();
         $material      = $materialModel->obtenerPorSesion($sesion['id']);
 
+        // Verificar si existe una evaluación para esta sesión
+        $evaluationModel = new \App\Model\Evaluation();
+        $evaluacion = $evaluationModel->obtenerPorSesion($sesion['id']);
+
+        // Fallback: si la columna sesion_id no existe (migración pendiente), usar tutoría
+        if (!$evaluacion && !$evaluationModel->columnaExiste('evaluaciones', 'sesion_id')) {
+            $evaluacion = $evaluationModel->obtenerPorTutoria($tutoria_id);
+        }
+
+        $rol = $_SESSION['rol'] ?? 'alumno';
+
+        // Verificar si el estudiante ya respondió
+        $yaRespondida = false;
+        if ($evaluacion) {
+            $stmtYa = \App\Database::getConnection()->prepare(
+                "SELECT COUNT(*) FROM respuestas_alumno WHERE evaluacion_id = ? AND alumno_id = ?"
+            );
+            $stmtYa->execute([$evaluacion['id'], $alumno_id]);
+            $yaRespondida = (int) $stmtYa->fetchColumn() > 0;
+        }
+
         return view('users/Session/Session', [
             'sesion'        => $sesion,
             'sesiones'      => $sesiones,
@@ -89,7 +110,9 @@ class SessionController {
             'materia'       => $materia,
             'horario'       => $horario,
             'nombre_alumno' => $nombre_alumno,
-            'rol'           => $_SESSION['rol'] ?? 'alumno',
+            'rol'           => $rol,
+            'evaluacion'    => $evaluacion,
+            'yaRespondida'  => $yaRespondida,
         ]);
     }
 

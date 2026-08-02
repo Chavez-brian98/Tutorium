@@ -1,5 +1,6 @@
 <?php
 $tutoria_id      = (int)   ($_GET['tutoria_id']   ?? 1);
+$sesion_id       = (int)   ($_GET['sesion_id']    ?? 0);
 $titulo          = htmlspecialchars($_GET['titulo']      ?? 'Sin título');
 $descripcion     = htmlspecialchars($_GET['descripcion'] ?? '');
 $total           = max(1, (int) ($_GET['total'] ?? 1));
@@ -25,10 +26,12 @@ $etiquetas = [
     'seleccion' => 'Opción múltiple',
 ];
 
-include __DIR__ . '/../../layout/sidebar.php';
 ?>
+<div class="flex min-h-screen">
 
-<div class="min-h-screen md:ml-64 p-6 md:p-8">
+<?php include __DIR__ . '/../../layout/sidebar.php'; ?>
+
+<div class="flex-1 p-6 md:p-8">
 
     <div style="background:white; border-radius:16px; border-top:8px solid var(--granate-600); padding:24px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
         <h1 style="font-family:'Playfair Display',serif; color:var(--granate-700); font-size:1.5rem; margin:0 0 6px;">
@@ -49,6 +52,7 @@ include __DIR__ . '/../../layout/sidebar.php';
 
     <form id="form-evaluacion" action="/evaluation/guardar" method="POST">
         <input type="hidden" name="tutoria_id"  value="<?= $tutoria_id ?>">
+        <input type="hidden" name="sesion_id"   value="<?= $sesion_id ?>">
         <input type="hidden" name="titulo"       value="<?= htmlspecialchars($titulo_raw) ?>">
         <input type="hidden" name="descripcion"  value="<?= htmlspecialchars($descripcion_raw) ?>">
 
@@ -76,3 +80,4 @@ const TIPOS_DISPONIBLES = <?= json_encode(array_values($tipos)) ?>;
 const DISTRIBUCION      = <?= json_encode($distribucion) ?>;
 </script>
 <script src="/javascript/Evaluation.js"></script>
+</div>

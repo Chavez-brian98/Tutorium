@@ -18,23 +18,41 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
         </div>
     </div>
 
+    <?php if (isset($_SESSION['flash_success'])): ?>
+        <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-3.5 text-sm text-emerald-700 flex items-center gap-2.5">
+            <i class="fas fa-check-circle text-emerald-500"></i>
+            <?= $_SESSION['flash_success'] ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['flash_error'])): ?>
+        <div class="mb-6 rounded-xl bg-red-50 border border-red-200 px-5 py-3.5 text-sm text-red-700 flex items-center gap-2.5">
+            <i class="fas fa-exclamation-circle text-red-500"></i>
+            <?= $_SESSION['flash_error'] ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Total de usuarios</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $totalUsuarios ?></p>
-            <p class="mt-2 text-sm text-secundario">Usuarios registrados en el sistema</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Total de usuarios</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $totalUsuarios ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Usuarios registrados en el sistema</p>
         </article>
 
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Activos</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $usuariosActivos ?></p>
-            <p class="mt-2 text-sm text-secundario">Usuarios con estado ACTIVO</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Activos</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $usuariosActivos ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Usuarios con estado ACTIVO</p>
         </article>
 
-        <article class="rounded-3xl bg-card p-6 border border-white/70 shadow-sm">
-            <p class="text-sm font-semibold text-secundario">Inactivos</p>
-            <p class="mt-4 text-4xl font-bold text-granate"><?= $usuariosInactivos ?></p>
-            <p class="mt-2 text-sm text-secundario">Usuarios con estado INACTIVO</p>
+        <article class="rounded-2xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 bg-white"
+                 style="border: 1px solid rgba(123, 28, 28, 0.1);">
+            <p class="text-sm font-semibold" style="color: #5a5a5a;">Inactivos</p>
+            <p class="mt-4 text-4xl font-bold" style="color: #5c1313;"><?= $usuariosInactivos ?></p>
+            <p class="mt-2 text-sm" style="color: #5a5a5a;">Usuarios con estado INACTIVO</p>
         </article>
     </div>
 
@@ -136,7 +154,7 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
                 </label>
                 <label class="block">
                     <span class="text-sm font-semibold text-slate-700">Teléfono</span>
-                    <input name="telefono" type="tel" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" placeholder="Ej: +503 1234-5678" />
+                    <input name="telefono" type="tel" maxlength="8" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" placeholder="Ej: 12345678" />
                 </label>
             </div>
             <div class="grid gap-4 md:grid-cols-2">
@@ -197,7 +215,7 @@ $usuariosInactivos = $totalUsuarios - $usuariosActivos;
                 </label>
                 <label class="block">
                     <span class="text-sm font-semibold text-slate-700">Teléfono</span>
-                    <input id="editTelefono" name="telefono" type="tel" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" />
+                    <input id="editTelefono" name="telefono" type="tel" maxlength="8" class="mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-granate focus:ring-2 focus:ring-granate/10" />
                 </label>
             </div>
             <div class="grid gap-4 md:grid-cols-2">
